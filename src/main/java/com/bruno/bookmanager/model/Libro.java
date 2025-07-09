@@ -1,5 +1,7 @@
 package com.bruno.bookmanager.model;
 
+import java.util.Objects;
+
 public class Libro {
     private String titolo;
     private String autore;
@@ -67,11 +69,22 @@ public class Libro {
         this.valutazione = valutazione;
     }
 
-    public StatoLettura getStato() {
+    public StatoLettura getStatoLettura() {
         return stato;
     }
 
-    public void setStato(StatoLettura stato) {
+    public void setStatoLettura(StatoLettura stato) {
         this.stato = stato;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Libro libro)) return false;
+        return Objects.equals(isbn, libro.isbn);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(isbn);
     }
 }
