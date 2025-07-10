@@ -1,10 +1,12 @@
 package com.bruno.bookmanager.dao;
 
+import com.bruno.bookmanager.dao.filters.Filter;
 import com.bruno.bookmanager.model.Libro;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Implementazione di {@link LibroDAO} che aggiunge una cache in memoria sopra un altro DAO.
@@ -77,5 +79,10 @@ public class CachedLibroDAO implements LibroDAO {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<Libro> getByFilter(Filter<Libro> filter) {
+        return getCache().stream().filter(filter::test).collect(Collectors.toList());
     }
 }

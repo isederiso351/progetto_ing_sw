@@ -1,5 +1,6 @@
 package com.bruno.bookmanager.dao;
 
+import com.bruno.bookmanager.dao.filters.Filter;
 import com.bruno.bookmanager.model.Libro;
 
 import java.util.List;
@@ -57,4 +58,7 @@ public interface LibroDAO {
      * @return true se l'aggiornamento è avvenuto con successo, false se il libro non esisteva
      */
     boolean update(Libro libro);
+
+
+    List<Libro> getByFilter(Filter<Libro> filter);
 }

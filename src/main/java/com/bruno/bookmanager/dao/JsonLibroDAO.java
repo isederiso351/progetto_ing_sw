@@ -1,5 +1,6 @@
 package com.bruno.bookmanager.dao;
 
+import com.bruno.bookmanager.dao.filters.Filter;
 import com.bruno.bookmanager.model.Libro;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Implementazione dell'interfaccia {@link LibroDAO} che salva e carica i dati da un file JSON.
@@ -91,5 +93,11 @@ public class JsonLibroDAO implements LibroDAO {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<Libro> getByFilter(Filter<Libro> filter) {
+        List<Libro> libri = getAll();
+        return libri.stream().filter(filter::test).collect(Collectors.toList());
     }
 }

@@ -1,5 +1,6 @@
 package com.bruno.bookmanager.dao;
 
+import com.bruno.bookmanager.dao.filters.Filter;
 import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;
 import com.bruno.bookmanager.model.StatoLettura;
@@ -152,6 +153,24 @@ public class SqliteLibroDAO implements LibroDAO {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Errore nell'aggiornamento del libro", e);
+        }
+    }
+
+    @Override
+    public List<Libro> getByFilter(Filter<Libro> filter) {
+        String sql = "SELECT * FROM libri WHERE " + filter.toSqlClause();
+
+        try (Connection conn = DriverManager.getConnection(url);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
+            List<Libro> libri = new ArrayList<>();
+            while (rs.next()) {
+                libri.add(mapRowToLibro(rs));
+            }
+
+            return libri;
+        } catch (SQLException e) {
+            throw new RuntimeException("Query failed", e);
         }
     }
 }

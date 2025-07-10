@@ -1,5 +1,9 @@
 package com.bruno.bookmanager.dao;
 
+import com.bruno.bookmanager.dao.filters.CompositeFilter;
+import com.bruno.bookmanager.dao.filters.Filter;
+import com.bruno.bookmanager.dao.filters.GenereFilter;
+import com.bruno.bookmanager.dao.filters.ValutazioneFilter;
 import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;
 import com.bruno.bookmanager.model.StatoLettura;
@@ -84,6 +88,23 @@ class LibroDAOTest {
 
         Libro nonEsistente = new Libro("Titolo X", "Autore X", "000000000", Genere.FANTASCIENZA, 1, StatoLettura.DA_LEGGERE);
         assertFalse(dao.update(nonEsistente));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideDAOs")
+    void getByFilterTest(LibroDAO dao) {
+        dao.saveAll(libri);
+
+        GenereFilter filter = new GenereFilter(Genere.ROMANZO);
+        List<Libro> result = dao.getByFilter(filter);
+
+        assertEquals(1, result.size());
+        assertEquals("Titolo 1", result.getFirst().getTitolo());
+
+        Filter<Libro> filtroComposto = new GenereFilter(Genere.FANTASCIENZA).and(new ValutazioneFilter(4));
+        result = dao.getByFilter(filtroComposto);
+        assertEquals(1, result.size());
+        assertEquals("Titolo 2", result.getFirst().getTitolo());
     }
 
 }
