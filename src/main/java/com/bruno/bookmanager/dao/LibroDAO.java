@@ -1,66 +1,60 @@
 package com.bruno.bookmanager.dao;
 
 import com.bruno.bookmanager.model.Libro;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-public class LibroDAO {
+/**
+ * Interfaccia per l'accesso e la gestione dei dati relativi ai libri.
+ * Rappresenta un contratto che può essere implementato con varie tecnologie di persistenza
+ * (es. file JSON, database SQLite, cache in memoria, ecc.).
+ */
+public interface LibroDAO {
 
-    private final String filePath;
-    private final ObjectMapper mapper = new ObjectMapper();
+    /**
+     * Restituisce la lista completa dei librimemorizzati.
+     *
+     * @return lista di tutti i libri
+     */
+    List<Libro> getAll();
 
-    public LibroDAO() {
-        this("libri.json");
-    }
+    /**
+     * Sovrascrive l'intera collezione di libri persistendo i dati forniti.
+     *
+     * @param libri lista completa dei libri da salvare
+     */
+    void saveAll(List<Libro> libri);
 
-    public LibroDAO(String filePath) {
-        this.filePath = filePath;
-    }
+    /**
+     * Cerca un libro tramite il suo ISBN
+     *
+     * @param isbn ISBN del libro cercato
+     * @return Optional contenente il libro, se trovato
+     */
+    Optional<Libro> getByIsbn(String isbn);
 
-    public List<Libro> scaricaLibri() {
-        try {
-            File file = new File(filePath);
-            if (!file.exists()) return new ArrayList<>();
-            return mapper.readValue(file, new TypeReference<List<Libro>>() {
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
+    /**
+     * Aggiunge un nuovo libro alla collezione
+     *
+     * @param libro il libro da agiungere
+     * @throws IllegalArgumentException se un libro con lo stesso ISBN è già presente
+     */
+    void add(Libro libro);
 
-    public void caricaLibri(List<Libro> libri) {
-        try {
-            File file = new File(filePath);
-            mapper.writerWithDefaultPrettyPrinter().writeValue(file, libri);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    /**
+     * Rimuove un libro tramite il suo ISBN, se presente
+     *
+     * @param isbn ISBN del libro da rimuovere
+     * @return true se il libro è stato trovato e rimosso, false altrimenti
+     */
+    boolean removeByIsbn(String isbn);
 
-    public boolean eliminaLibro(String isbn) {
-        List<Libro> libri = scaricaLibri();
-        boolean rimosso = libri.removeIf(libro -> libro.getIsbn().equals(isbn));
-        if (rimosso) caricaLibri(libri);
-        return rimosso;
-    }
-
-    public boolean aggiornaLibro(Libro libro) {
-        List<Libro> libri = scaricaLibri();
-        for (int i = 0; i < libri.size(); i++) {
-            if (libri.get(i).equals(libro)) {
-                libri.set(i, libro);
-                caricaLibri(libri);
-                return true;
-            }
-        }
-        return false;
-    }
-
-
+    /**
+     * Aggiorna le informazioni di un libro già presente, identificato da ISBN
+     *
+     * @param libro libro aggiornato
+     * @return true se l'aggiornamento è avvenuto con successo, false se il libro non esisteva
+     */
+    boolean update(Libro libro);
 }
