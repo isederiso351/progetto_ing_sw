@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.bruno.bookmanager.view.WelcomeController"
+      alignment="CENTER" spacing="30" style="-fx-padding: 50px;">
+
+    <Label text="Benvenuto in BookManager"
+           style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+
+    <Button fx:id="loadLibraryButton" text="Carica Libreria" minWidth="200" minHeight="50"
+            style="-fx-font-size: 16px;"/>
+    <Button fx:id="newLibraryButton" text="Crea Nuova Libreria" onAction="#handleCreateNewLibrary" minWidth="200"
+            minHeight="50" style="-fx-font-size: 16px;"/>
+
+</VBox>

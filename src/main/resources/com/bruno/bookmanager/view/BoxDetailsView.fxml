@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.*?>
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.bruno.bookmanager.view.BoxDetailsController"
+      spacing="10"
+      style="-fx-background-color: white; -fx-border-color: #ccc; -fx-border-radius: 8; -fx-background-radius: 8;-fx-padding: 20"
+      prefWidth="300">
+
+    <!-- Barra pulsanti in alto -->
+    <HBox spacing="10" alignment="TOP_RIGHT">
+        <Button fx:id="editButton" text="✎" onAction="#onEditClicked"
+                style="-fx-background-color: #e0e0e0; -fx-background-radius: 8; -fx-font-size: 14; -fx-cursor: hand;"/>
+        <Button fx:id="deleteButton" text="🗑" onAction="#onDeleteClicked"
+                style="-fx-background-color: #ffcccc; -fx-background-radius: 8; -fx-font-size: 14; -fx-cursor: hand;"/>
+        <Button fx:id="closeButton" text="✕" onAction="#onCloseClicked"
+                style="-fx-background-color: #cccccc; -fx-background-radius: 8; -fx-font-size: 14; -fx-cursor: hand;"/>
+    </HBox>
+
+
+    <Label fx:id="titoloLabel" style="-fx-font-size: 20; -fx-font-weight: bold;" wrapText="true"
+           textAlignment="CENTER"/>
+
+    <TextFlow>
+        <Text text="Autore: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
+        <Text fx:id="autoreText" style="-fx-font-size: 15"/>
+    </TextFlow>
+
+    <TextFlow>
+        <Text text="ISBN: " style="-fx-font-weight: bold;-fx-font-size: 15"/>
+        <Text fx:id="isbnText" style="-fx-font-size: 15"/>
+    </TextFlow>
+
+    <TextFlow>
+        <Text text="Genere: " style="-fx-font-weight: bold;-fx-font-size: 15"/>
+        <Text fx:id="genereText" style="-fx-font-size: 15"/>
+    </TextFlow>
+
+    <TextFlow>
+        <Text text="Valutazione: " style="-fx-font-weight: bold;-fx-font-size: 15"/>
+        <Text fx:id="valutazioneText" style="-fx-font-size: 15"/>
+    </TextFlow>
+
+    <TextFlow>
+        <Text text="Stato lettura: " style="-fx-font-weight: bold;-fx-font-size: 15"/>
+        <Text fx:id="statoText" style="-fx-font-size: 15"/>
+    </TextFlow>
+</VBox>
