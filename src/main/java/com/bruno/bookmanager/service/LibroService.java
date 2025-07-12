@@ -1,8 +1,8 @@
 package com.bruno.bookmanager.service;
 
 import com.bruno.bookmanager.dao.LibroDAO;
-import com.bruno.bookmanager.filters.Filter;
 import com.bruno.bookmanager.exception.*;
+import com.bruno.bookmanager.filters.Filter;
 import com.bruno.bookmanager.model.Libro;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 /**
  * Service principale per la gestione dei libri.
- *<p>
+ * <p>
  * Fornisce tutte le funzionalità richieste dal frontend:
  * <ul>
  *     <li>CRUD operations sui libri</li>
@@ -45,13 +45,18 @@ public final class LibroService {
     }
 
     /**
-     * Imposta la strategia DAO da utilizzare (Strategy Pattern).
+     * Imposta il tipo di DAO e il path del file da utilizzare.
      *
-     * @param libroDAO implementazione del DAO da utilizzare
+     * @param type tipo di DAO da impostare
+     * @param path percorso del file su cui avviare il DAO
      */
+    public void setDAO(DAOType type, String path) {
+        this.libroDAO = DAOFactory.createDAO(type, path);
+        logger.info("Strategia DAO cambiata a: {}", type.name());
+    }
+
     public void setLibroDAO(LibroDAO libroDAO) {
         this.libroDAO = libroDAO;
-        logger.info("Strategia DAO cambiata a: {}", libroDAO.getClass().getSimpleName());
     }
 
     private void checkDAOInitialized() throws BookManagerException {
@@ -66,9 +71,9 @@ public final class LibroService {
      * Aggiunge un nuovo libro alla collezione.
      *
      * @param libro libro da aggiungere
-     * @throws ValidationException se i dati del libro non sono validi
+     * @throws ValidationException         se i dati del libro non sono validi
      * @throws LibroAlreadyExistsException se il libro esiste già
-     * @throws BookManagerException per altri errori
+     * @throws BookManagerException        per altri errori
      */
     public void aggiungiLibro(Libro libro) throws BookManagerException {
         checkDAOInitialized();
@@ -87,8 +92,8 @@ public final class LibroService {
      *
      * @param isbn ISBN del libro da rimuovere
      * @throws LibroNotFoundException se il libro non viene trovato
-     * @throws ValidationException se l'ISBN non è valido
-     * @throws BookManagerException per altri errori
+     * @throws ValidationException    se l'ISBN non è valido
+     * @throws BookManagerException   per altri errori
      */
     public void rimuoviLibro(String isbn) throws BookManagerException {
         checkDAOInitialized();
@@ -106,9 +111,9 @@ public final class LibroService {
      * Aggiorna le informazioni di un libro esistente.
      *
      * @param libro libro con le informazioni aggiornate
-     * @throws ValidationException se i dati del libro non sono validi
+     * @throws ValidationException    se i dati del libro non sono validi
      * @throws LibroNotFoundException se il libro non viene trovato
-     * @throws BookManagerException per altri errori
+     * @throws BookManagerException   per altri errori
      */
     public void aggiornaLibro(Libro libro) throws BookManagerException {
         checkDAOInitialized();
@@ -128,7 +133,7 @@ public final class LibroService {
      *
      * @param isbn ISBN del libro cercato
      * @return Optional contenente il libro se trovato
-     * @throws ValidationException se l'ISBN non è valido
+     * @throws ValidationException  se l'ISBN non è valido
      * @throws BookManagerException per errori di accesso ai dati
      */
     public Optional<Libro> trovaLibroPerIsbn(String isbn) throws BookManagerException {
@@ -179,9 +184,7 @@ public final class LibroService {
         List<Libro> tuttiILibri = getAllLibri();
         String titoloLower = titolo.toLowerCase().trim();
 
-        return tuttiILibri.stream()
-                .filter(libro -> libro.getTitolo().toLowerCase().contains(titoloLower))
-                .toList();
+        return tuttiILibri.stream().filter(libro -> libro.getTitolo().toLowerCase().contains(titoloLower)).toList();
     }
 
     /**
@@ -199,12 +202,10 @@ public final class LibroService {
         List<Libro> tuttiILibri = getAllLibri();
         String autoreLower = autore.trim().toLowerCase();
 
-        return tuttiILibri.stream()
-                .filter(libro -> libro.getAutore().toLowerCase().contains(autoreLower))
-                .toList();
+        return tuttiILibri.stream().filter(libro -> libro.getAutore().toLowerCase().contains(autoreLower)).toList();
     }
-/*
-    *//**
+    /*
+     *//**
      * Filtra libri per genere.
      *
      * @param genere genere da filtrare
@@ -246,7 +247,7 @@ public final class LibroService {
     /**
      * Ordina una lista di libri per titolo.
      *
-     * @param libri lista di libri da ordinare
+     * @param libri     lista di libri da ordinare
      * @param crescente true per ordine crescente, false per decrescente
      * @return lista ordinata
      */
@@ -256,15 +257,13 @@ public final class LibroService {
             comparator = comparator.reversed();
         }
 
-        return libri.stream()
-                .sorted(comparator)
-                .toList();
+        return libri.stream().sorted(comparator).toList();
     }
 
     /**
      * Ordina una lista di libri per autore.
      *
-     * @param libri lista di libri da ordinare
+     * @param libri     lista di libri da ordinare
      * @param crescente true per ordine crescente, false per decrescente
      * @return lista ordinata
      */
@@ -274,15 +273,13 @@ public final class LibroService {
             comparator = comparator.reversed();
         }
 
-        return libri.stream()
-                .sorted(comparator)
-                .toList();
+        return libri.stream().sorted(comparator).toList();
     }
 
     /**
      * Ordina una lista di libri per valutazione.
      *
-     * @param libri lista di libri da ordinare
+     * @param libri     lista di libri da ordinare
      * @param crescente true per ordine crescente, false per decrescente
      * @return lista ordinata
      */
@@ -292,12 +289,11 @@ public final class LibroService {
             comparator = comparator.reversed();
         }
 
-        return libri.stream()
-                .sorted(comparator)
-                .toList();
+        return libri.stream().sorted(comparator).toList();
     }
 
     // ============= PERSISTENZA =============
+
     /**
      * Carica la collezione da memoria secondaria.
      *
@@ -336,9 +332,6 @@ public final class LibroService {
     public double getValutazioneMedia() throws BookManagerException {
         List<Libro> tuttiILibri = getAllLibri();
 
-        return tuttiILibri.stream()
-                .mapToInt(Libro::getValutazione)
-                .average()
-                .orElse(0.0);
+        return tuttiILibri.stream().mapToInt(Libro::getValutazione).average().orElse(0.0);
     }
 }

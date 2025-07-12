@@ -30,10 +30,6 @@ public class JsonLibroDAO implements LibroDAO {
     private final String filePath;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public JsonLibroDAO() {
-        this("libri.json");
-    }
-
     /**
      * Crea un JsonLibroDAO con percorso file personalizzato.
      *

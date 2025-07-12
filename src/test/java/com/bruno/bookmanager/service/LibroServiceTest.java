@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -297,5 +298,22 @@ public class LibroServiceTest {
     @Test
     void validateLibroNullTest() {
         assertThrows(ValidationException.class, () -> service.aggiungiLibro(null));
+    }
+
+    @Test
+    void setDAOWithTypeAndPathTest() {
+        File testFile = new File("test_libri.json");
+
+        assertDoesNotThrow(() -> service.setDAO(DAOType.JSON, testFile.getAbsolutePath()));
+        assertDoesNotThrow(() -> service.getAllLibri());
+    }
+
+    @Test
+    void setDAOWithInvalidPathTest() {
+        assertThrows(IllegalArgumentException.class,
+                () -> service.setDAO(DAOType.JSON, null));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> service.setDAO(DAOType.JSON, ""));
     }
 }
