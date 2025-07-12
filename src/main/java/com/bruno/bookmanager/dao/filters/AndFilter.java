@@ -1,17 +1,12 @@
 package com.bruno.bookmanager.dao.filters;
 
-public class AndFilter<T> extends CompositeFilter<T>{
+public class AndFilter<T> implements Filter<T>{
 
     private final Filter<T> left, right;
 
     public AndFilter(Filter<T> left, Filter<T> right) {
         this.left = left;
         this.right = right;
-    }
-
-    @Override
-    protected String getOperator() {
-        return "AND";
     }
 
     @Override

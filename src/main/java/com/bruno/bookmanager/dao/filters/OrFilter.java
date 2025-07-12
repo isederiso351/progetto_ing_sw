@@ -1,17 +1,12 @@
 package com.bruno.bookmanager.dao.filters;
 
-public class OrFilter<T> extends CompositeFilter<T>{
+public class OrFilter<T> implements Filter<T>{
 
     private final Filter<T> left, right;
 
     public OrFilter(Filter<T> left, Filter<T> right) {
         this.left = left;
         this.right = right;
-    }
-
-    @Override
-    protected String getOperator() {
-        return "OR";
     }
 
     @Override
