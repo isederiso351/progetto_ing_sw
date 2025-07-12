@@ -61,6 +61,11 @@ public class Libro {
         this.genere = genere;
     }
 
+    public String getGenereName() {
+        if (genere == null) return null;
+        return genere.name();
+    }
+
     public int getValutazione() {
         return valutazione;
     }

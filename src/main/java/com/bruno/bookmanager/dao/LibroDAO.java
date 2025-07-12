@@ -1,6 +1,9 @@
 package com.bruno.bookmanager.dao;
 
 import com.bruno.bookmanager.dao.filters.Filter;
+import com.bruno.bookmanager.exception.DAOException;
+import com.bruno.bookmanager.exception.LibroAlreadyExistsException;
+import com.bruno.bookmanager.exception.LibroNotFoundException;
 import com.bruno.bookmanager.model.Libro;
 
 import java.util.List;
@@ -14,51 +17,77 @@ import java.util.Optional;
 public interface LibroDAO {
 
     /**
-     * Restituisce la lista completa dei librimemorizzati.
+     * Restituisce la lista completa dei libri memorizzati.
      *
      * @return lista di tutti i libri
+     * @throws DAOException se si verifica un errore nell'accesso ai dati
      */
-    List<Libro> getAll();
+    List<Libro> getAll() throws DAOException;
 
     /**
      * Sovrascrive l'intera collezione di libri persistendo i dati forniti.
      *
      * @param libri lista completa dei libri da salvare
+     * @throws DAOException se si verifica un errore nel salvataggio
      */
-    void saveAll(List<Libro> libri);
+    void saveAll(List<Libro> libri) throws DAOException;
 
     /**
      * Cerca un libro tramite il suo ISBN
      *
      * @param isbn ISBN del libro cercato
      * @return Optional contenente il libro, se trovato
+     * @throws DAOException se si verifica un errore nell'accesso ai dati
      */
-    Optional<Libro> getByIsbn(String isbn);
+    Optional<Libro> getByIsbn(String isbn) throws DAOException;
 
     /**
      * Aggiunge un nuovo libro alla collezione
      *
      * @param libro il libro da agiungere
-     * @throws IllegalArgumentException se un libro con lo stesso ISBN è già presente
+     * @throws LibroAlreadyExistsException se un libro con lo stesso ISBN è già presente
+     * @throws DAOException                se si verifica un errore nell'accesso ai dati
      */
-    void add(Libro libro);
+    void add(Libro libro) throws LibroAlreadyExistsException, DAOException;
 
     /**
-     * Rimuove un libro tramite il suo ISBN, se presente
+     * Rimuove un libro tramite il suo ISBN
      *
      * @param isbn ISBN del libro da rimuovere
-     * @return true se il libro è stato trovato e rimosso, false altrimenti
+     * @throws LibroNotFoundException se il libro non viene trovato
+     * @throws DAOException           se si verifica un errore nell'accesso ai dati
      */
-    boolean removeByIsbn(String isbn);
+    void removeByIsbn(String isbn) throws LibroNotFoundException, DAOException;
 
     /**
      * Aggiorna le informazioni di un libro già presente, identificato da ISBN
      *
      * @param libro libro aggiornato
-     * @return true se l'aggiornamento è avvenuto con successo, false se il libro non esisteva
+     * @throws LibroNotFoundException se il libro non viene trovato
+     * @throws DAOException           se si verifica un errore nell'accesso ai dati
      */
-    boolean update(Libro libro);
+    void update(Libro libro) throws LibroNotFoundException, DAOException;
 
 
-    List<Libro> getByFilter(Filter<Libro> filter);
+    /**
+     * Filtra i libri secondo il filtro specificato
+     *
+     * @param filter filtro da applicare
+     * @return lista di libri che soddisfano il filtro
+     * @throws DAOException se si verifica un errore nell'accesso ai dati
+     */
+    List<Libro> getByFilter(Filter<Libro> filter) throws DAOException;
+
+    /**
+     * Indica se questa implementazione preferisce operazioni batch (saveAll)
+     * rispetto a operazioni singole (add/update/remove).
+     * <p>
+     * Le implementazioni basate su file (JSON, CSV) dovrebbero restituire true,
+     * mentre quelle basate su database dovrebbero restituire false.
+     *
+     * @return true se preferisce operazioni batch, false se preferisce operazioni singole
+     */
+    default boolean prefersBatchOperations() {
+        return false;
+    }
 }
