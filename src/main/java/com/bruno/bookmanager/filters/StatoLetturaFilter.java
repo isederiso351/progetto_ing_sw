@@ -1,4 +1,4 @@
-package com.bruno.bookmanager.dao.filters;
+package com.bruno.bookmanager.filters;
 
 import com.bruno.bookmanager.model.Libro;
 import com.bruno.bookmanager.model.StatoLettura;

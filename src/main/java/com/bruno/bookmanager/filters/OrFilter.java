@@ -1,4 +1,4 @@
-package com.bruno.bookmanager.dao.filters;
+package com.bruno.bookmanager.filters;
 
 public class OrFilter<T> implements Filter<T>{
 

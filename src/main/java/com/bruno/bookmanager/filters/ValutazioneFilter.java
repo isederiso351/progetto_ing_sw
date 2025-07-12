@@ -1,6 +1,5 @@
-package com.bruno.bookmanager.dao.filters;
+package com.bruno.bookmanager.filters;
 
-import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;
 
 public class ValutazioneFilter implements Filter<Libro> {

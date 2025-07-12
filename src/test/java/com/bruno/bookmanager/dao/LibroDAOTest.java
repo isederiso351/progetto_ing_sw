@@ -1,8 +1,8 @@
 package com.bruno.bookmanager.dao;
 
-import com.bruno.bookmanager.dao.filters.Filter;
-import com.bruno.bookmanager.dao.filters.GenereFilter;
-import com.bruno.bookmanager.dao.filters.ValutazioneFilter;
+import com.bruno.bookmanager.filters.Filter;
+import com.bruno.bookmanager.filters.GenereFilter;
+import com.bruno.bookmanager.filters.ValutazioneFilter;
 import com.bruno.bookmanager.exception.DAOException;
 import com.bruno.bookmanager.exception.LibroAlreadyExistsException;
 import com.bruno.bookmanager.exception.LibroNotFoundException;

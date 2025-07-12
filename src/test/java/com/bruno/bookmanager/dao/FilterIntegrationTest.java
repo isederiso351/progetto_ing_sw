@@ -1,9 +1,9 @@
 package com.bruno.bookmanager.dao;
 
-import com.bruno.bookmanager.dao.filters.Filter;
-import com.bruno.bookmanager.dao.filters.GenereFilter;
-import com.bruno.bookmanager.dao.filters.StatoLetturaFilter;
-import com.bruno.bookmanager.dao.filters.ValutazioneFilter;
+import com.bruno.bookmanager.filters.Filter;
+import com.bruno.bookmanager.filters.GenereFilter;
+import com.bruno.bookmanager.filters.StatoLetturaFilter;
+import com.bruno.bookmanager.filters.ValutazioneFilter;
 import com.bruno.bookmanager.exception.DAOException;
 import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;

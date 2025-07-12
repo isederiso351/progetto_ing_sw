@@ -1,4 +1,4 @@
-package com.bruno.bookmanager.dao.filters;
+package com.bruno.bookmanager.filters;
 
 public interface Filter<T> {
     boolean test(T item);
