@@ -49,7 +49,7 @@ public class SqliteLibroDAO implements LibroDAO {
                                 autore TEXT,
                                 genere TEXT,
                                 valutazione INTEGER CHECK(valutazione >= 0 AND valutazione <= 5),
-                                stato TEXT NOT NULL,
+                                stato TEXT NOT NULL
                             );
                 """;
 
@@ -179,9 +179,26 @@ public class SqliteLibroDAO implements LibroDAO {
             logger.info("Aggiunto libro: {} (ISBN: {})", libro.getTitolo(), libro.getIsbn());
 
         } catch (SQLException e) {
+            if (isPrimaryKeyViolation(e)) {
+                logger.warn("Tentativo di aggiunta libro già esistente con ISBN {}", libro.getIsbn());
+                throw new LibroAlreadyExistsException(libro.getIsbn());
+            }
+
             logger.error("Errore durante l'aggiunta del libro con ISBN {}", libro.getIsbn(), e);
             throw new DAOException("Impossibile aggiungere il libro", e);
         }
+    }
+
+    /**
+     * Controlla se l'SQLException è dovuta a violazione di PRIMARY KEY.
+     * SQLite ha codici di errore specifici per questo tipo di violazione.
+     */
+    private boolean isPrimaryKeyViolation(SQLException e) {
+        return e.getErrorCode() == 19 // SQLITE_CONSTRAINT
+                || e.getErrorCode() == 1555 // SQLITE_CONSTRAINT_PRIMARYKEY
+                || (e.getMessage() != null &&
+                (e.getMessage().contains("PRIMARY KEY constraint failed") ||
+                        e.getMessage().contains("UNIQUE constraint failed")));
     }
 
     @Override

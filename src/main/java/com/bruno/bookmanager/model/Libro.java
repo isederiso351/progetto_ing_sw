@@ -1,5 +1,7 @@
 package com.bruno.bookmanager.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Objects;
 
 public class Libro {
@@ -61,6 +63,7 @@ public class Libro {
         this.genere = genere;
     }
 
+    @JsonIgnore
     public String getGenereName() {
         if (genere == null) return null;
         return genere.name();

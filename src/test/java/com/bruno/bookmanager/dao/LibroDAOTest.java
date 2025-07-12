@@ -3,6 +3,9 @@ package com.bruno.bookmanager.dao;
 import com.bruno.bookmanager.dao.filters.Filter;
 import com.bruno.bookmanager.dao.filters.GenereFilter;
 import com.bruno.bookmanager.dao.filters.ValutazioneFilter;
+import com.bruno.bookmanager.exception.DAOException;
+import com.bruno.bookmanager.exception.LibroAlreadyExistsException;
+import com.bruno.bookmanager.exception.LibroNotFoundException;
 import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;
 import com.bruno.bookmanager.model.StatoLettura;
@@ -27,12 +30,12 @@ class LibroDAOTest {
     private static final String JSON_PATH = "libri_test.json";
     private static final String CACHED_PATH = "libri_test_cache.json";
     private static final String SQLITE_URL = "jdbc:sqlite:libri_test.db";
-
+    private final Comparator<Libro> byIsbn = Comparator.comparing(Libro::getIsbn);
     private List<Libro> libri;
-    private Comparator<Libro> byIsbn = Comparator.comparing(Libro::getIsbn);
 
     static Stream<LibroDAO> provideDAOs() {
-        return Stream.of(new JsonLibroDAO(JSON_PATH), new CachedLibroDAO(new JsonLibroDAO(CACHED_PATH)), new SqliteLibroDAO(SQLITE_URL));
+        return Stream.of(new JsonLibroDAO(JSON_PATH), new CachedLibroDAO(new JsonLibroDAO(CACHED_PATH)),
+                new SqliteLibroDAO(SQLITE_URL));
     }
 
     @BeforeEach
@@ -53,57 +56,112 @@ class LibroDAOTest {
 
     @ParameterizedTest
     @MethodSource("provideDAOs")
-    void save_getTest(LibroDAO dao) {
+    void saveAndGetAllTest(LibroDAO dao) throws DAOException {
         dao.saveAll(libri);
         List<Libro> scaricati = dao.getAll();
         scaricati.sort(byIsbn);
-        assertTrue(scaricati.equals(libri));
+        assertEquals(libri, scaricati);
     }
 
     @ParameterizedTest
     @MethodSource("provideDAOs")
-    void removeTest(LibroDAO dao) {
+    void addAndGetByIsbnTest(LibroDAO dao) throws DAOException, LibroAlreadyExistsException {
+
+        dao.saveAll(new ArrayList<>());
+
+        Libro libro = new Libro("Titolo Test", "Autore Test", "111111111", Genere.THRILLER, 3, StatoLettura.DA_LEGGERE);
+
+        dao.add(libro);
+
+        Optional<Libro> found = dao.getByIsbn(libro.getIsbn());
+        assertTrue(found.isPresent());
+        assertEquals(libro, found.get());
+
+        assertThrows(LibroAlreadyExistsException.class, () -> dao.add(libro));
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("provideDAOs")
+    void removeByIsbnTest(LibroDAO dao) throws DAOException {
         dao.saveAll(libri);
-        assertTrue(dao.removeByIsbn("123456789"));
+
+        assertDoesNotThrow(() -> dao.removeByIsbn("123456789"));
 
         List<Libro> dopo = dao.getAll();
         assertEquals(1, dopo.size());
         assertEquals("987654321", dopo.getFirst().getIsbn());
 
-        assertFalse(dao.removeByIsbn("000000000"));
+        assertThrows(LibroNotFoundException.class, () -> dao.removeByIsbn("000000000"));
     }
 
     @ParameterizedTest
     @MethodSource("provideDAOs")
-    void updateTest(LibroDAO dao) {
+    void updateTest(LibroDAO dao) throws DAOException {
         dao.saveAll(libri);
-        Libro aggiornato = new Libro("Titolo 1 Aggiornato", "Autore 1", "123456789", Genere.FANTASY, 5, StatoLettura.IN_LETTURA);
-        assertTrue(dao.update(aggiornato));
 
-        List<Libro> dopo = dao.getAll();
-        Optional<Libro> trovato = dopo.stream().filter(l -> l.getIsbn().equals("123456789")).findFirst();
-        assertTrue(trovato.isPresent());
-        assertEquals("Titolo 1 Aggiornato", trovato.get().getTitolo());
+        Libro updated = new Libro("Titolo 1 Aggiornato", "Autore 1", "123456789", Genere.FANTASY, 5,
+                StatoLettura.IN_LETTURA);
+        assertDoesNotThrow(() -> dao.update(updated));
+
+        Optional<Libro> found = dao.getByIsbn("123456789");
+        assertTrue(found.isPresent());
+        assertEquals("Titolo 1 Aggiornato", found.get().getTitolo());
+        assertEquals(Genere.FANTASY, found.get().getGenere());
+        assertEquals(StatoLettura.IN_LETTURA, found.get().getStatoLettura());
 
         Libro nonEsistente = new Libro("Titolo X", "Autore X", "000000000", Genere.FANTASCIENZA, 1, StatoLettura.DA_LEGGERE);
-        assertFalse(dao.update(nonEsistente));
+        assertThrows(LibroNotFoundException.class, () -> dao.update(nonEsistente));
     }
 
     @ParameterizedTest
     @MethodSource("provideDAOs")
-    void getByFilterTest(LibroDAO dao) {
+    void getByFilterTest(LibroDAO dao) throws DAOException {
         dao.saveAll(libri);
 
+        //Test filtro base
         GenereFilter filter = new GenereFilter(Genere.ROMANZO);
         List<Libro> result = dao.getByFilter(filter);
-
         assertEquals(1, result.size());
         assertEquals("Titolo 1", result.getFirst().getTitolo());
 
+        //Test filstro composto
         Filter<Libro> filtroComposto = new GenereFilter(Genere.FANTASCIENZA).and(new ValutazioneFilter(4));
         result = dao.getByFilter(filtroComposto);
         assertEquals(1, result.size());
         assertEquals("Titolo 2", result.getFirst().getTitolo());
+
+        //Test NoResult
+        filter = new GenereFilter(Genere.HORROR);
+        result = dao.getByFilter(filter);
+        assertTrue(result.isEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideDAOs")
+    void complexOperationSequenceTest(LibroDAO dao) throws DAOException, LibroAlreadyExistsException, LibroNotFoundException {
+        dao.saveAll(new ArrayList<>());
+
+        Libro libro1 = new Libro("Book 1", "Author 1", "1111111111", Genere.ROMANZO, 4, StatoLettura.DA_LEGGERE);
+        Libro libro2 = new Libro("Book 2", "Author 2", "2222222222", Genere.FANTASCIENZA, 5, StatoLettura.LETTO);
+
+        dao.add(libro1);
+        dao.add(libro2);
+
+        assertEquals(2, dao.getAll().size());
+
+        Libro libro1Updated = new Libro("Book 1 Updated", "Author 1", "1111111111", Genere.THRILLER, 5, StatoLettura.IN_LETTURA);
+        dao.update(libro1Updated);
+
+        Optional<Libro> found = dao.getByIsbn("1111111111");
+        assertTrue(found.isPresent());
+        assertEquals("Book 1 Updated", found.get().getTitolo());
+        assertEquals(Genere.THRILLER, found.get().getGenere());
+
+        dao.removeByIsbn("2222222222");
+        assertEquals(1, dao.getAll().size());
+
+        assertFalse(dao.getByIsbn("2222222222").isPresent());
     }
 
 }
