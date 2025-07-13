@@ -9,20 +9,24 @@ import java.util.Stack;
 /**
  * Gestisce la cronologia dei comandi per implementare undo/redo.
  */
-public class CommandHistory {
+public final class CommandHistory {
+
+    private static volatile CommandHistory singleton;
 
     private static final Logger logger = LoggerFactory.getLogger(CommandHistory.class);
 
     private final Stack<Command> undoStack = new Stack<>();
     private final Stack<Command> redoStack = new Stack<>();
-    private final int maxHistorySize;
+    private final int maxHistorySize = 50;
 
-    public CommandHistory() {
-        this(50);
-    }
 
-    public CommandHistory(int maxHistorySize) {
-        this.maxHistorySize = maxHistorySize;
+    private CommandHistory() { }
+
+    public synchronized static CommandHistory getInstance() {
+        if (singleton == null) {
+            singleton = new CommandHistory();
+        }
+        return singleton;
     }
 
     /**

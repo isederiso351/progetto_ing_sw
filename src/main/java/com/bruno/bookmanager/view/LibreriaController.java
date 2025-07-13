@@ -48,7 +48,7 @@ public class LibreriaController {
 
     // Services and controllers
     private final LibroService libroService = LibroService.getInstance();
-    private final CommandHistory commandHistory = new CommandHistory();
+    private final CommandHistory commandHistory = CommandHistory.getInstance();
     private UnifiedBookPanelController panelController;
     private AdvancedFilterComponent advancedFilter;
     private List<Libro> currentBooks;
@@ -253,7 +253,7 @@ public class LibreriaController {
                 panelController = loader.getController();
                 panelController.setOnDeleteCallback(this::handleDeleteFromPanel);
                 panelController.setOnCloseCallback(this::hideBoxDetails);
-                panelController.setOnSaveCallback(this::applyFiltersAndSearch);
+                panelController.setOnSaveCallback(this::handleSaveFromPanel);
                 detailsPlaceholder.getChildren().add(bookPanel);
             } catch (IOException e) {
                 showErrorAlert("Errore", "Impossibile caricare il pannello del libro "+e);
@@ -331,23 +331,15 @@ public class LibreriaController {
         }
     }
 
-    private void handleDeleteFromPanel(Libro libro) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Conferma eliminazione");
-        alert.setHeaderText("Eliminare il libro?");
-        alert.setContentText("Sei sicuro di voler eliminare \"" + libro.getTitolo() + "\"?");
+    private void handleDeleteFromPanel() {
+        hideBoxDetails();
+        applyFiltersAndSearch();
+        updateUndoRedoButtons();
+    }
 
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            try {
-                commandHistory.executeCommand(new RemoveLibroCommand(libroService, libro.getIsbn()));
-                hideBoxDetails();
-                applyFiltersAndSearch();
-                updateUndoRedoButtons();
-            } catch (BookManagerException e) {
-                showErrorAlert("Errore", "Impossibile eliminare il libro: " + e.getMessage());
-            }
-        }
+    private void handleSaveFromPanel(){
+        applyFiltersAndSearch();
+        updateUndoRedoButtons();
     }
 
     public void handleAddBook(ActionEvent actionEvent) {

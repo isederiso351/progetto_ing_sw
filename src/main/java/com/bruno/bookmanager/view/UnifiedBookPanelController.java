@@ -2,6 +2,7 @@ package com.bruno.bookmanager.view;
 
 import com.bruno.bookmanager.command.AddLibroCommand;
 import com.bruno.bookmanager.command.CommandHistory;
+import com.bruno.bookmanager.command.RemoveLibroCommand;
 import com.bruno.bookmanager.command.UpdateLibroCommand;
 import com.bruno.bookmanager.exception.BookManagerException;
 import com.bruno.bookmanager.exception.ValidationException;
@@ -23,6 +24,7 @@ import javafx.util.Duration;
 
 import javax.security.auth.callback.Callback;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static com.bruno.bookmanager.utils.StringUtils.formatEnumName;
@@ -52,11 +54,11 @@ public class UnifiedBookPanelController {
     private boolean isEditMode = false;
     private boolean isAddMode = false;
     private final LibroService libroService = LibroService.getInstance();
-    private final CommandHistory commandHistory = new CommandHistory();
+    private final CommandHistory commandHistory = CommandHistory.getInstance();
 
     // Callback
     private Runnable onCloseCallback;
-    private Consumer<Libro> onDeleteCallback;
+    private Runnable onDeleteCallback;
     private Runnable onSaveCallback;
 
     @FXML
@@ -264,8 +266,22 @@ public class UnifiedBookPanelController {
 
     @FXML
     public void onDeleteClicked(ActionEvent actionEvent) {
-        if (onDeleteCallback != null && currentLibro != null) {
-            onDeleteCallback.accept(currentLibro);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Conferma eliminazione");
+        alert.setHeaderText("Eliminare il libro?");
+        alert.setContentText("Sei sicuro di voler eliminare \"" + currentLibro.getTitolo() + "\"?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                commandHistory.executeCommand(new RemoveLibroCommand(libroService, currentLibro.getIsbn()));
+                currentLibro=null;
+            } catch (BookManagerException e) {
+                showErrorAlert("Errore", "Impossibile eliminare il libro: " + e.getMessage());
+            }
+        }
+        if (onDeleteCallback != null) {
+            onDeleteCallback.run();
         }
     }
 
@@ -285,7 +301,6 @@ public class UnifiedBookPanelController {
                 commandHistory.executeCommand(new UpdateLibroCommand(libroService, libro));
                 currentLibro = libro;
                 setLibro(libro);
-                showSuccessAlert("Libro aggiornato con successo!");
             } else if (isAddMode) {
                 commandHistory.executeCommand(new AddLibroCommand(libroService, libro));
                 currentLibro = libro;
@@ -311,7 +326,7 @@ public class UnifiedBookPanelController {
         this.onCloseCallback = onCloseCallback;
     }
 
-    public void setOnDeleteCallback(Consumer<Libro> onDeleteCallback) {
+    public void setOnDeleteCallback(Runnable onDeleteCallback) {
         this.onDeleteCallback = onDeleteCallback;
     }
 

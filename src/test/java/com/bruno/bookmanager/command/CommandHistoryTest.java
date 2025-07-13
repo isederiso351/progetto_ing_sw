@@ -19,7 +19,7 @@ class CommandHistoryTest {
 
     @BeforeEach
     void setUp() {
-        history = new CommandHistory(3); // Limite di 3 comandi per test
+        history = CommandHistory.getInstance(); // Limite di 3 comandi per test
 
         mockCommand1 = mock(Command.class);
         mockCommand2 = mock(Command.class);
