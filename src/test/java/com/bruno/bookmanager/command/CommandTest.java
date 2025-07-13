@@ -6,7 +6,7 @@ import com.bruno.bookmanager.exception.LibroNotFoundException;
 import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;
 import com.bruno.bookmanager.model.StatoLettura;
-import com.bruno.bookmanager.service.DAOType;
+import com.bruno.bookmanager.dao.DAOType;
 import com.bruno.bookmanager.service.LibroService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

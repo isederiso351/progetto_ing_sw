@@ -116,29 +116,6 @@ class LibroDAOTest {
 
     @ParameterizedTest
     @MethodSource("provideDAOs")
-    void getByFilterTest(LibroDAO dao) throws DAOException {
-        dao.saveAll(libri);
-
-        //Test filtro base
-        GenereFilter filter = new GenereFilter(Genere.ROMANZO);
-        List<Libro> result = dao.getByFilter(filter);
-        assertEquals(1, result.size());
-        assertEquals("Titolo 1", result.getFirst().getTitolo());
-
-        //Test filstro composto
-        Filter<Libro> filtroComposto = new GenereFilter(Genere.FANTASCIENZA).and(new ValutazioneFilter(4));
-        result = dao.getByFilter(filtroComposto);
-        assertEquals(1, result.size());
-        assertEquals("Titolo 2", result.getFirst().getTitolo());
-
-        //Test NoResult
-        filter = new GenereFilter(Genere.HORROR);
-        result = dao.getByFilter(filter);
-        assertTrue(result.isEmpty());
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideDAOs")
     void complexOperationSequenceTest(LibroDAO dao) throws DAOException, LibroAlreadyExistsException, LibroNotFoundException {
         dao.saveAll(new ArrayList<>());
 

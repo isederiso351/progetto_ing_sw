@@ -7,6 +7,7 @@ import com.bruno.bookmanager.exception.LibroNotFoundException;
 import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;
 import com.bruno.bookmanager.model.StatoLettura;
+import com.bruno.bookmanager.service.SearchCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ import java.util.Optional;
  * Implementazione di {@link LibroDAO} che utilizza un database SQLite per
  * la persistenza dei dati dei libri.
  */
-public class SqliteLibroDAO implements LibroDAO {
+public class SqliteLibroDAO implements LibroDAO, OptimizedSearch {
 
     private static final Logger logger = LoggerFactory.getLogger(SqliteLibroDAO.class);
 
@@ -256,23 +257,54 @@ public class SqliteLibroDAO implements LibroDAO {
     }
 
     @Override
-    public List<Libro> getByFilter(Filter<Libro> filter) throws DAOException {
-        String sql = "SELECT * FROM libri WHERE " + filter.toSqlClause();
+    public List<Libro> search(SearchCriteria criteria) throws DAOException {
+        if (criteria == null) {
+            return getAll();
+        }
+
+        StringBuilder sql = new StringBuilder("SELECT * FROM libri");
+
+        // Applica filtro se presente
+        if (criteria.hasFilter()) {
+            try {
+                String whereClause = criteria.getFilter().toSqlClause();
+                if (whereClause != null && !whereClause.trim().isEmpty()) {
+                    sql.append(" WHERE ").append(whereClause);
+                }
+            } catch (Exception e) {
+                logger.error("Errore nell'applicare il filtro: {}",
+                        e.getMessage());
+                throw new DAOException("Impossibile convertire il filtro", e);
+            }
+        }
+
+        // Applica ordinamento se presente
+        if (criteria.hasSorting()) {
+            sql.append(" ORDER BY ");
+            sql.append(criteria.getSortField().name().toLowerCase());
+
+            if (!criteria.isSortAsc()) {
+                sql.append(" DESC");
+            }
+        }
+
+        logger.debug("Executing search query: {}", sql);
 
         try (Connection conn = DriverManager.getConnection(url);
-             PreparedStatement stmt = conn.prepareStatement(sql);
+             PreparedStatement stmt = conn.prepareStatement(sql.toString());
              ResultSet rs = stmt.executeQuery()) {
 
-            List<Libro> libri = new ArrayList<>();
+            List<Libro> result = new ArrayList<>();
             while (rs.next()) {
-                libri.add(mapRowToLibro(rs));
+                result.add(mapRowToLibro(rs));
             }
 
-            logger.debug("Filtro SQL applicato: trovati {} libri", libri.size());
-            return libri;
+            logger.debug("Search completed: found {} books", result.size());
+            return result;
+
         } catch (SQLException e) {
-            logger.error("Errore durante l'applicazione del filtro SQL", e);
-            throw new DAOException("Impossibile applicare il filtro", e);
+            logger.error("Error during search operation", e);
+            throw new DAOException("Error during search operation", e);
         }
     }
 }

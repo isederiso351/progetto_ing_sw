@@ -1,16 +1,20 @@
 package com.bruno.bookmanager.service;
 
+import com.bruno.bookmanager.dao.DAOFactory;
+import com.bruno.bookmanager.dao.DAOType;
 import com.bruno.bookmanager.dao.LibroDAO;
+import com.bruno.bookmanager.dao.OptimizedSearch;
 import com.bruno.bookmanager.exception.*;
 import com.bruno.bookmanager.filters.Filter;
+import com.bruno.bookmanager.filters.ISBNFilter;
 import com.bruno.bookmanager.model.Libro;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * Service principale per la gestione dei libri.
@@ -63,6 +67,13 @@ public final class LibroService {
         if (libroDAO == null) {
             throw new BookManagerException("DAO non inizializzato. Chiamare setLibroDAO() prima di usare il service.");
         }
+    }
+
+    /**
+     * Verifica se il DAO corrente supporta ricerche ottimizzate.
+     */
+    public boolean supportsOptimizedSearch() {
+        return libroDAO instanceof OptimizedSearch;
     }
 
     // ============= OPERAZIONI CRUD =============
@@ -169,6 +180,65 @@ public final class LibroService {
 
     // ============= RICERCA E FILTRI =============
 
+
+    public List<Libro> search(SearchCriteria criteria) throws BookManagerException {
+        checkDAOInitialized();
+        if (criteria == null) {
+            criteria = SearchCriteria.all();
+        }
+
+        try {
+            if (supportsOptimizedSearch()) {
+                // Usa ricerca ottimizzata
+                OptimizedSearch optimizedDAO = (OptimizedSearch) libroDAO;
+                List<Libro> result = optimizedDAO.search(criteria);
+                logger.debug("Ricerca ottimizzata completata: {} libri trovati", result.size());
+                return result;
+            } else {
+                // Fallback: ricerca in memoria
+                List<Libro> result = searchInMemory(criteria);
+                logger.debug("Ricerca in memoria completata: {} libri trovati", result.size());
+                return result;
+            }
+        } catch (DAOException e) {
+            logger.error("Errore durante la ricerca", e);
+            throw new BookManagerException("Impossibile eseguire la ricerca", e);
+        }
+
+    }
+
+    private List<Libro> searchInMemory(SearchCriteria criteria) throws DAOException {
+        List<Libro> allBooks = libroDAO.getAll();
+        Stream<Libro> stream = allBooks.stream();
+
+        // Applica filtro se presente
+        if (criteria.hasFilter()) {
+            stream = stream.filter(criteria.getFilter()::test);
+        }
+
+        // Applica ordinamento se presente
+        if (criteria.hasSorting()) {
+            Comparator<Libro> comparator = switch (criteria.getSortField()) {
+                case TITOLO -> Comparator.comparing(Libro::getTitolo);
+                case AUTORE -> Comparator.comparing(Libro::getAutore);
+                case VALUTAZIONE -> Comparator.comparing(Libro::getValutazione);
+                case GENERE -> Comparator.comparing(libro -> libro.getGenere().name());
+                case STATO -> Comparator.comparing(libro -> libro.getStatoLettura().name());
+                case ISBN -> Comparator.comparing(Libro::getIsbn);
+            };
+
+            if (!criteria.isSortAsc()) {
+                comparator = comparator.reversed();
+            }
+
+            stream = stream.sorted(comparator);
+        }
+
+        return stream.toList();
+    }
+
+    //Metodi di convenienza
+
     /**
      * Cerca libri per titolo (ricerca parziale case-insensitive).
      *
@@ -178,13 +248,9 @@ public final class LibroService {
      */
     public List<Libro> cercaPerTitolo(String titolo) throws BookManagerException {
         if (titolo == null || titolo.trim().isEmpty()) {
-            return new ArrayList<>();
+            return getAllLibri();
         }
-
-        List<Libro> tuttiILibri = getAllLibri();
-        String titoloLower = titolo.toLowerCase().trim();
-
-        return tuttiILibri.stream().filter(libro -> libro.getTitolo().toLowerCase().contains(titoloLower)).toList();
+        return search(SearchCriteria.byTitle(titolo));
     }
 
     /**
@@ -196,32 +262,24 @@ public final class LibroService {
      */
     public List<Libro> cercaPerAutore(String autore) throws BookManagerException {
         if (autore == null || autore.trim().isEmpty()) {
-            return new ArrayList<>();
+            return getAllLibri();
         }
-
-        List<Libro> tuttiILibri = getAllLibri();
-        String autoreLower = autore.trim().toLowerCase();
-
-        return tuttiILibri.stream().filter(libro -> libro.getAutore().toLowerCase().contains(autoreLower)).toList();
+        return search(SearchCriteria.byAuthor(autore));
     }
-    /*
-     *//**
-     * Filtra libri per genere.
-     *
-     * @param genere genere da filtrare
-     * @return lista dei libri del genere specificato
-     * @throws BookManagerException per errori di accesso ai dati
-     *//*
-    public List<Libro> filtraPerGenere(Genere genere) throws BookManagerException {
-        checkDAOInitialized();
 
-        try {
-            return libroDAO.getByFilter(new GenereFilter(genere));
-        } catch (DAOException e) {
-            logger.error("Errore durante il filtro per genere {}", genere, e);
-            throw new BookManagerException("Impossibile filtrare per genere", e);
+    /**
+     * Cerca libri per ISBN (ricerca parziale).
+     *
+     * @param isbn parte dell'ISBN da cercare
+     * @return lista dei libri con parte di ISBN corrispondente
+     * @throws BookManagerException per errori di accesso ai dati
+     */
+    public List<Libro> cercaPerIsbn(String isbn) throws BookManagerException {
+        if (isbn == null || isbn.trim().isEmpty()) {
+            return getAllLibri();
         }
-    }*/
+        return search(new SearchCriteria.Builder().filter(new ISBNFilter(isbn)).build());
+    }
 
 
     /**
@@ -232,66 +290,8 @@ public final class LibroService {
      * @throws BookManagerException per errori di accesso ai dati
      */
     public List<Libro> filtraLibri(Filter<Libro> filter) throws BookManagerException {
-        checkDAOInitialized();
-
-        try {
-            return libroDAO.getByFilter(filter);
-        } catch (DAOException e) {
-            logger.error("Errore durante l'applicazione del filtro personalizzato", e);
-            throw new BookManagerException("Impossibile applicare il filtro", e);
-        }
+        return search(SearchCriteria.byFilter(filter));
     }
-
-    // ============= ORDINAMENTO =============
-
-    /**
-     * Ordina una lista di libri per titolo.
-     *
-     * @param libri     lista di libri da ordinare
-     * @param crescente true per ordine crescente, false per decrescente
-     * @return lista ordinata
-     */
-    public List<Libro> ordinaPerTitolo(List<Libro> libri, boolean crescente) {
-        Comparator<Libro> comparator = Comparator.comparing(Libro::getTitolo);
-        if (!crescente) {
-            comparator = comparator.reversed();
-        }
-
-        return libri.stream().sorted(comparator).toList();
-    }
-
-    /**
-     * Ordina una lista di libri per autore.
-     *
-     * @param libri     lista di libri da ordinare
-     * @param crescente true per ordine crescente, false per decrescente
-     * @return lista ordinata
-     */
-    public List<Libro> ordinaPerAutore(List<Libro> libri, boolean crescente) {
-        Comparator<Libro> comparator = Comparator.comparing(Libro::getAutore);
-        if (!crescente) {
-            comparator = comparator.reversed();
-        }
-
-        return libri.stream().sorted(comparator).toList();
-    }
-
-    /**
-     * Ordina una lista di libri per valutazione.
-     *
-     * @param libri     lista di libri da ordinare
-     * @param crescente true per ordine crescente, false per decrescente
-     * @return lista ordinata
-     */
-    public List<Libro> ordinaPerValutazione(List<Libro> libri, boolean crescente) {
-        Comparator<Libro> comparator = Comparator.comparing(Libro::getValutazione);
-        if (!crescente) {
-            comparator = comparator.reversed();
-        }
-
-        return libri.stream().sorted(comparator).toList();
-    }
-
     // ============= PERSISTENZA =============
 
     /**

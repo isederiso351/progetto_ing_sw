@@ -1,9 +1,5 @@
-package com.bruno.bookmanager.service;
+package com.bruno.bookmanager.dao;
 
-import com.bruno.bookmanager.dao.CachedLibroDAO;
-import com.bruno.bookmanager.dao.JsonLibroDAO;
-import com.bruno.bookmanager.dao.LibroDAO;
-import com.bruno.bookmanager.dao.SqliteLibroDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

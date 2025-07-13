@@ -68,16 +68,6 @@ public interface LibroDAO {
      */
     void update(Libro libro) throws LibroNotFoundException, DAOException;
 
-
-    /**
-     * Filtra i libri secondo il filtro specificato
-     *
-     * @param filter filtro da applicare
-     * @return lista di libri che soddisfano il filtro
-     * @throws DAOException se si verifica un errore nell'accesso ai dati
-     */
-    List<Libro> getByFilter(Filter<Libro> filter) throws DAOException;
-
     /**
      * Indica se questa implementazione preferisce operazioni batch (saveAll)
      * rispetto a operazioni singole (add/update/remove).

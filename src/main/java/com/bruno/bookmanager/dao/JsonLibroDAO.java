@@ -121,15 +121,6 @@ public class JsonLibroDAO implements LibroDAO {
     }
 
     @Override
-    public List<Libro> getByFilter(Filter<Libro> filter) throws DAOException {
-        List<Libro> libri = getAll();
-        List<Libro> result = libri.stream().filter(filter::test).toList();
-
-        logger.debug("Filtro applicato: trovati {} libri su {}", result.size(), libri.size());
-        return result;
-    }
-
-    @Override
     public boolean prefersBatchOperations() {
         return true;
     }

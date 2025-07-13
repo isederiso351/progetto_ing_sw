@@ -1,5 +1,6 @@
 package com.bruno.bookmanager.service;
 
+import com.bruno.bookmanager.dao.DAOType;
 import com.bruno.bookmanager.dao.LibroDAO;
 import com.bruno.bookmanager.filters.GenereFilter;
 import com.bruno.bookmanager.exception.*;
@@ -144,10 +145,6 @@ public class LibroServiceTest {
         int count = service.contaLibri();
         assertEquals(2, count);
 
-        // Cerca per genere
-        when(mockDAO.getByFilter(any())).thenReturn(List.of(libro2));
-        List<Libro> fantascienzaBooks = service.filtraLibri(new GenereFilter(Genere.FANTASCIENZA));
-        assertEquals(1, fantascienzaBooks.size());
 
         // Rimuovi un libro
         service.rimuoviLibro("1111111111");
@@ -218,54 +215,6 @@ public class LibroServiceTest {
         service.aggiornaLibro(libro);
 
         verify(mockDAO).update(libro);
-    }
-
-    @Test
-    void ordinaPerTitoloCrescenteTest() throws Exception {
-        when(mockDAO.getAll()).thenReturn(testBooks);
-        List<Libro> libri = service.getAllLibri();
-
-        List<Libro> result = service.ordinaPerTitolo(libri, true);
-
-        assertEquals("1984", result.get(0).getTitolo());
-        assertEquals("Dune", result.get(1).getTitolo());
-        assertEquals("Neuromante", result.get(2).getTitolo());
-    }
-
-    @Test
-    void ordinaPerTitoloDecrescenteTest() throws Exception {
-        when(mockDAO.getAll()).thenReturn(testBooks);
-        List<Libro> libri = service.getAllLibri();
-
-        List<Libro> result = service.ordinaPerTitolo(libri, false);
-
-        assertEquals("Neuromante", result.get(0).getTitolo());
-        assertEquals("Dune", result.get(1).getTitolo());
-        assertEquals("1984", result.get(2).getTitolo());
-    }
-
-    @Test
-    void ordinaPerAutoreTest() throws Exception {
-        when(mockDAO.getAll()).thenReturn(testBooks);
-        List<Libro> libri = service.getAllLibri();
-
-        List<Libro> result = service.ordinaPerAutore(libri, true);
-
-        assertEquals("Frank Herbert", result.get(0).getAutore());
-        assertEquals("George Orwell", result.get(1).getAutore());
-        assertEquals("William Gibson", result.get(2).getAutore());
-    }
-
-    @Test
-    void ordinaPerValutazioneTest() throws Exception {
-        when(mockDAO.getAll()).thenReturn(testBooks);
-        List<Libro> libri = service.getAllLibri();
-
-        List<Libro> result = service.ordinaPerValutazione(libri, true);
-
-        assertEquals(3, result.get(0).getValutazione());
-        assertEquals(4, result.get(1).getValutazione());
-        assertEquals(5, result.get(2).getValutazione());
     }
 
     @Test

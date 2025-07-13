@@ -1,4 +1,4 @@
-package com.bruno.bookmanager.service;
+package com.bruno.bookmanager.dao;
 
 /**
  * Enum che definisce i tipi di DAO disponibili per la persistenza dei libri.

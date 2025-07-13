@@ -169,14 +169,6 @@ public class CachedLibroDAO implements LibroDAO {
         }
     }
 
-    @Override
-    public List<Libro> getByFilter(Filter<Libro> filter) throws DAOException {
-        List<Libro> result = getCache().stream().filter(filter::test).collect(Collectors.toList());
-
-        logger.debug("Filtro applicato in cache: trovati {} libri su {}", result.size(), cache.size());
-        return result;
-    }
-
     /**
      * Invalida e ricarica la cache dal delegate.
      *
