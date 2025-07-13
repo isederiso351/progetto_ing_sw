@@ -222,7 +222,9 @@ public final class LibroService {
                 case TITOLO -> Comparator.comparing(Libro::getTitolo);
                 case AUTORE -> Comparator.comparing(Libro::getAutore);
                 case VALUTAZIONE -> Comparator.comparing(Libro::getValutazione);
-                case GENERE -> Comparator.comparing(libro -> libro.getGenere().name());
+                case GENERE ->
+                        Comparator.comparing(libro -> libro.getGenere() != null ? libro.getGenere().name() : null,
+                                Comparator.nullsLast(String::compareTo));
                 case STATO -> Comparator.comparing(libro -> libro.getStatoLettura().name());
                 case ISBN -> Comparator.comparing(Libro::getIsbn);
             };

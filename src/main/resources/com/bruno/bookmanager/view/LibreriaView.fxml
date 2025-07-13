@@ -1,22 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.StackPane?>
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.bruno.bookmanager.view.LibreriaController">
-            <!--prefWidth="730" prefHeight="500"-->
+    <!--prefWidth="730" prefHeight="500"-->
 
     <top>
-        <MenuBar>
-            <Menu text="File">
-                <MenuItem fx:id="addBookMenuItem" text="Aggiungi Libro"/>
-            </Menu>
-        </MenuBar>
+        <ToolBar style="-fx-background-color: #f8f9fa;">
+
+            <!-- Aggiungi Libro -->
+            <Button fx:id="addBookButton" text="+" onAction="#handleAddBook"
+                    style="-fx-background-color: #28a745; -fx-text-fill: white; -fx-background-radius: 4;
+                           -fx-cursor: hand; -fx-font-weight: bold; -fx-padding: 8 12;"/>
+
+            <Separator orientation="VERTICAL"/>
+
+
+            <!-- Undo/Redo -->
+            <Button fx:id="undoButton" text="↶" onAction="#handleUndo"
+                    style="-fx-background-color: #e9ecef; -fx-background-radius: 4; -fx-cursor: hand;"
+                    disable="true"/>
+            <Button fx:id="redoButton" text="↷" onAction="#handleRedo"
+                    style="-fx-background-color: #e9ecef; -fx-background-radius: 4; -fx-cursor: hand;"
+                    disable="true"/>
+
+            <Separator orientation="VERTICAL"/>
+
+            <!-- Search -->
+            <Label text="🔍"/>
+            <TextField fx:id="searchField" promptText="Cerca libri..." prefWidth="200"/>
+            <ComboBox fx:id="searchTypeComboBox" prefWidth="120"/>
+
+            <Separator orientation="VERTICAL"/>
+
+            <!-- Quick Filters -->
+            <Label text="Filtri:"/>
+            <MenuButton fx:id="filtersMenuButton"
+                        style="-fx-background-color: #e9ecef; -fx-text-fill: white; -fx-background-radius: 4; -fx-cursor: hand;"
+                        prefWidth="150"/>
+
+            <Separator orientation="VERTICAL"/>
+
+            <!-- Sort -->
+            <Label text="Ordina:"/>
+            <ComboBox fx:id="sortComboBox" prefWidth="100"/>
+            <CheckBox fx:id="sortOrderCheckBox" text="↓"/>
+
+            <Separator orientation="VERTICAL"/>
+
+            <Button text="🗑️ Pulisci Filtri" onAction="#handleClearFilters"
+                    style="-fx-background-color: #ffc107; -fx-text-fill: white; -fx-background-radius: 4; -fx-cursor: hand;"/>
+        </ToolBar>
     </top>
 
     <!-- Griglia di libri -->

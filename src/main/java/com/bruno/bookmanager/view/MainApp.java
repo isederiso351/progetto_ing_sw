@@ -1,4 +1,4 @@
-package com.bruno.bookmanager;
+package com.bruno.bookmanager.view;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

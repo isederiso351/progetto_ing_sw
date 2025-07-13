@@ -30,7 +30,7 @@ public class Validator {
 
     public static void validateIsbn(String isbn) throws ValidationException {
         if (isbn == null || isbn.isBlank()) {
-            throw new ValidationException("ISBN non può essere null o vuoto");
+            throw new ValidationException("ISBN non può essere vuoto");
         }
         if(!isbn.matches("^(\\d{9}[\\dX]|\\d{13})$"))
             throw new ValidationException("ISBN non valido");

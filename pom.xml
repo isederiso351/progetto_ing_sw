@@ -20,6 +20,7 @@
         <logback.version>1.5.18</logback.version>
     </properties>
 
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
         <dependency>

@@ -8,11 +8,20 @@
       alignment="CENTER" spacing="30" style="-fx-padding: 50px;">
 
     <Label text="Benvenuto in BookManager"
-           style="-fx-font-size: 28px; -fx-font-weight: bold;"/>
+           style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;"/>
 
-    <Button fx:id="loadLibraryButton" text="Carica Libreria" minWidth="200" minHeight="50"
-            style="-fx-font-size: 16px;"/>
-    <Button fx:id="newLibraryButton" text="Crea Nuova Libreria" onAction="#handleCreateNewLibrary" minWidth="200"
-            minHeight="50" style="-fx-font-size: 16px;"/>
+    <Label text="Gestisci la tua collezione di libri personale"
+           style="-fx-font-size: 16px; -fx-text-fill: #7f8c8d;"/>
+
+    <Button fx:id="loadLibraryButton" text="📖 Carica Libreria Esistente"
+            onAction="#handleLoadLibrary"
+            minWidth="250" minHeight="60"
+            style="-fx-font-size: 16px; -fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 8;
+    -fx-cursor: hand;"/>
+
+    <Button fx:id="newLibraryButton" text="📚 Crea Nuova Libreria"
+            onAction="#handleCreateNewLibrary"
+            minWidth="250" minHeight="60"
+            style="-fx-font-size: 16px; -fx-background-color: #27ae60; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;"/>
 
 </VBox>
