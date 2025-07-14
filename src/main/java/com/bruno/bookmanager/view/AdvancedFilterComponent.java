@@ -37,8 +37,12 @@ public class AdvancedFilterComponent {
         this.menuButton = menuButton;
         this.contentBox = new VBox(5);
         this.scrollPane = new ScrollPane(contentBox);
+        scrollPane.getStylesheets().add("data:text/css," +
+                ".check-box { -fx-text-fill: black; -fx-focus-color: transparent; -fx-faint-focus-color: transparent; }" +
+                ".check-box:hover { -fx-text-fill: #2980b9; -fx-background-color: transparent; }" +
+                ".check-box:focused { -fx-focus-color: transparent; -fx-faint-focus-color: transparent; }"
+        );
 
-        setupScrollPane();
         setupFilterContent();
         setupCustomMenuItem();
         updateButtonText();
@@ -65,8 +69,6 @@ public class AdvancedFilterComponent {
         addSeparator();
 
         addSection("📖 Genere", createGenereFilters());
-
-        addSeparator();
     }
 
     private void addSection(String title, List<CheckBox> checkBoxes) {
@@ -174,6 +176,15 @@ public class AdvancedFilterComponent {
 
         menuButton.getItems().clear();
         menuButton.getItems().add(customMenuItem);
+        menuButton.getStyleClass().add("filter");
+
+        menuButton.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            }
+        });
+
+
     }
 
     public void clearAll() {

@@ -31,28 +31,28 @@
                textAlignment="CENTER"/>
 
         <TextFlow>
-            <Text text="Autore: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
-            <Text fx:id="autoreText" style="-fx-font-size: 15"/>
+            <Label text="Autore: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
+            <Label fx:id="autoreText" style="-fx-font-size: 15"/>
         </TextFlow>
 
         <TextFlow>
-            <Text text="ISBN: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
-            <Text fx:id="isbnText" style="-fx-font-size: 15"/>
+            <Label text="ISBN: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
+            <Label fx:id="isbnText" style="-fx-font-size: 15"/>
         </TextFlow>
 
         <TextFlow>
-            <Text text="Genere: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
-            <Text fx:id="genereText" style="-fx-font-size: 15"/>
+            <Label text="Genere: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
+            <Label fx:id="genereText" style="-fx-font-size: 15"/>
         </TextFlow>
 
         <TextFlow>
-            <Text text="Valutazione: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
-            <Text fx:id="valutazioneText" style="-fx-font-size: 15"/>
+            <Label text="Valutazione: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
+            <Label fx:id="valutazioneText" style="-fx-font-size: 15"/>
         </TextFlow>
 
         <TextFlow>
-            <Text text="Stato lettura: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
-            <Text fx:id="statoText" style="-fx-font-size: 15"/>
+            <Label text="Stato lettura: " style="-fx-font-weight: bold; -fx-font-size: 15"/>
+            <Label fx:id="statoText" style="-fx-font-size: 15"/>
         </TextFlow>
     </VBox>
 

@@ -1,0 +1,16 @@
+.filter .context-menu {
+    -fx-background-color: white;
+}
+
+.filter .context-menu:focused {
+    -fx-background-color: white;
+}
+
+.filter .custom-menu-item {
+    -fx-background-color: white;
+    -fx-padding: 0;
+}
+
+.filter .custom-menu-item:focused {
+    -fx-background-color: white;
+}

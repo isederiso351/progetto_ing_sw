@@ -19,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -35,7 +36,7 @@ public class UnifiedBookPanelController {
     // Elementi della vista dettagli
     @FXML private VBox detailsView;
     @FXML private Label titoloLabel;
-    @FXML private Text autoreText, isbnText, genereText, valutazioneText, statoText;
+    @FXML private Label autoreText, isbnText, genereText, valutazioneText, statoText;
 
     // Elementi della vista form
     @FXML private VBox formView;
@@ -197,6 +198,7 @@ public class UnifiedBookPanelController {
         isbnText.setText(libro.getIsbn());
         genereText.setText(StringUtils.formatEnumName(libro.getGenere()!=null?libro.getGenere().name():""));
         valutazioneText.setText("★".repeat(libro.getValutazione()));
+        valutazioneText.setTextFill(Color.GOLD);
         statoText.setText(StringUtils.formatEnumName(libro.getStatoLettura().name()));
     }
 

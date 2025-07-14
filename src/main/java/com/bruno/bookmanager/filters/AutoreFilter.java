@@ -11,7 +11,7 @@ public class AutoreFilter implements Filter<Libro>{
 
     @Override
     public boolean test(Libro libro) {
-        return libro.getTitolo().toLowerCase().contains(autore.toLowerCase());
+        return libro.getAutore().toLowerCase().contains(autore.toLowerCase());
     }
 
     @Override

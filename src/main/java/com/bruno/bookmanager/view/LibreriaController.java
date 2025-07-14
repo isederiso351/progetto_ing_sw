@@ -210,7 +210,7 @@ public class LibreriaController {
         titleLabel.setMaxWidth(150);
 
         Label authorLabel = new Label("");
-        if(libro.getAutore() != null) {
+        if(libro.getAutore() != null && !libro.getAutore().isEmpty()) {
             authorLabel.setText("di " + libro.getAutore());
             authorLabel.setFont(Font.font("Arial", 11));
             authorLabel.setTextFill(Color.GRAY);

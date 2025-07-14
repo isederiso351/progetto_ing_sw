@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.StackPane?>
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.bruno.bookmanager.view.LibreriaController">
-    <!--prefWidth="730" prefHeight="500"-->
 
     <top>
         <ToolBar style="-fx-background-color: #f8f9fa;">
