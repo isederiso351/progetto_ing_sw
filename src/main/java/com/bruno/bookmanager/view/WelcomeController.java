@@ -6,13 +6,16 @@ import com.bruno.bookmanager.utils.StringUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceDialog;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,11 +107,96 @@ public class WelcomeController {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("LibreriaView.fxml"));
         Parent root = loader.load();
 
+        Scene welcomeScene = stage.getScene();
+
         stage.setScene(new Scene(root, 1200, 800));
         stage.setTitle("Book Manager - "+name);
         stage.setMinWidth(800);
         stage.setMinHeight(600);
+
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+        // Calcola la posizione per centrare la finestra
+        double centerX = (screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX();
+        double centerY = (screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY();
+
+        // Imposta la posizione
+        stage.setX(centerX);
+        stage.setY(centerY);
+
+        setupReturnToWelcome(stage, welcomeScene);
+        centerStageOnScreen(stage);
         stage.show();
+    }
+
+    private void setupReturnToWelcome(Stage stage, Scene welcomeScene) {
+
+        stage.setOnCloseRequest(event -> {
+            event.consume();
+            returnToWelcomeView(stage, welcomeScene);
+            stage.setOnCloseRequest(null);
+        });
+    }
+
+    /**
+     * Metodo pubblico per permettere alla LibreriaView di tornare alla WelcomeView
+     */
+    public static void returnToWelcomeFromLibrary(Stage stage) {
+        try {
+            // Ricarica la WelcomeView
+            FXMLLoader loader = new FXMLLoader(WelcomeController.class.getResource("WelcomeView.fxml"));
+            Parent welcomeRoot = loader.load();
+
+            Scene welcomeScene = new Scene(welcomeRoot);
+            stage.setScene(welcomeScene);
+            stage.setTitle("Book Manager");
+
+            logger.info("Ritorno alla WelcomeView completato");
+        } catch (IOException e) {
+            logger.error("Errore durante il ritorno alla WelcomeView", e);
+            stage.close();
+        }
+    }
+
+    /**
+     * Esegue il ritorno alla WelcomeView.
+     */
+    private void returnToWelcomeView(Stage stage, Scene welcomeScene) {
+        try {
+            if (welcomeScene != null) {
+                stage.setScene(welcomeScene);
+                stage.setTitle("BookManager");
+            } else {
+                // Ricarica la WelcomeView se la scena non è disponibile
+                returnToWelcomeFromLibrary(stage);
+                return; // returnToWelcomeFromLibrary gestisce già tutto
+            }
+            logger.info("Ritorno alla WelcomeView completato");
+
+        } catch (Exception e) {
+            logger.error("Errore durante il ritorno alla WelcomeView", e);
+            stage.close();
+        }
+    }
+
+    /**
+     * Centra la finestra al centro dello schermo principale.
+     *
+     * @param stage la finestra da centrare
+     */
+    private static void centerStageOnScreen(Stage stage) {
+        // Ottieni le dimensioni dello schermo principale
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+        // Calcola la posizione per centrare la finestra
+        double centerX = (screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX();
+        double centerY = (screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY();
+
+        // Imposta la posizione
+        stage.setX(centerX);
+        stage.setY(centerY);
+
+        logger.debug("Finestra centrata alle coordinate: X={}, Y={}", centerX, centerY);
     }
 
     /**

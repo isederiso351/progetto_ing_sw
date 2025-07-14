@@ -55,6 +55,11 @@ public class LibreriaController {
 
     @FXML
     public void initialize() {
+        booksFlowPane.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+            }
+        });
         setupControls();
         setupEventListeners();
         loadBooks();
@@ -163,7 +168,7 @@ public class LibreriaController {
 
         if (libri.isEmpty()) {
             Label noBooks = new Label("Nessun libro presente nella libreria");
-            noBooks.setStyle("-fx-font-size: 18px; -fx-text-fill: #7f8c8d;");
+            noBooks.getStyleClass().add("no-books");
             booksFlowPane.getChildren().add(noBooks);
             return;
         }
@@ -180,27 +185,7 @@ public class LibreriaController {
         card.setAlignment(Pos.CENTER);
         card.setPadding(new Insets(15));
         card.setPrefSize(180, 150);
-        card.setStyle("-fx-background-color: white;" +
-                "-fx-background-radius: 10;" +
-                "-fx-border-radius: 10;" +
-                "-fx-border-color: #e0e0e0;" +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0.6, 2, 2);" +
-                "-fx-cursor: hand;");
-
-        // Effetto hover
-        card.setOnMouseEntered(e -> card.setStyle("-fx-background-color: #f8f9fa;" +
-                "-fx-background-radius: 10;" +
-                "-fx-border-radius: 10;" +
-                "-fx-border-color: #3498db;" +
-                "-fx-effect: dropshadow(gaussian, rgba(52,152,219,0.3), 12, 0.8, 2, 2);" +
-                "-fx-cursor: hand;"));
-
-        card.setOnMouseExited(e -> card.setStyle("-fx-background-color: white;" +
-                "-fx-background-radius: 10;" +
-                "-fx-border-radius: 10;" +
-                "-fx-border-color: #e0e0e0;" +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0.6, 2, 2);" +
-                "-fx-cursor: hand;"));
+        card.getStyleClass().add("book-card");
 
         Label titleLabel = new Label(libro.getTitolo());
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 13));

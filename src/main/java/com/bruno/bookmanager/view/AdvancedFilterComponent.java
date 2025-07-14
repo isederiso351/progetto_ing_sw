@@ -37,12 +37,8 @@ public class AdvancedFilterComponent {
         this.menuButton = menuButton;
         this.contentBox = new VBox(5);
         this.scrollPane = new ScrollPane(contentBox);
-        scrollPane.getStylesheets().add("data:text/css," +
-                ".check-box { -fx-text-fill: black; -fx-focus-color: transparent; -fx-faint-focus-color: transparent; }" +
-                ".check-box:hover { -fx-text-fill: #2980b9; -fx-background-color: transparent; }" +
-                ".check-box:focused { -fx-focus-color: transparent; -fx-faint-focus-color: transparent; }"
-        );
 
+        setupScrollPane();
         setupFilterContent();
         setupCustomMenuItem();
         updateButtonText();
@@ -53,11 +49,11 @@ public class AdvancedFilterComponent {
         scrollPane.setMaxHeight(400);
         scrollPane.setMinHeight(300);
         scrollPane.setPrefWidth(280);
-        scrollPane.setStyle("-fx-background-color: white; -fx-border-color: #ccc;");
+        scrollPane.getStyleClass().add("filter-scroll-pane");
     }
 
     private void setupFilterContent() {
-        contentBox.setStyle("-fx-padding: 10; -fx-background-color: white;");
+        contentBox.getStyleClass().add("filter-content");
 
 
         addSection("📚 Stato Lettura", createStatoLetturaFilters());
@@ -73,7 +69,6 @@ public class AdvancedFilterComponent {
 
     private void addSection(String title, List<CheckBox> checkBoxes) {
         Label sectionLabel = new Label(title);
-        sectionLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: #495057;");
         contentBox.getChildren().add(sectionLabel);
 
         VBox sectionBox = new VBox(3);
@@ -93,7 +88,6 @@ public class AdvancedFilterComponent {
 
         for (StatoLettura stato : StatoLettura.values()) {
             CheckBox checkBox = new CheckBox(StringUtils.formatEnumName(stato.name()));
-            checkBox.setStyle("-fx-font-size: 12px;");
 
             checkBox.setOnAction(e -> {
                 if (checkBox.isSelected()) {
@@ -115,7 +109,7 @@ public class AdvancedFilterComponent {
 
         // Non valutato (0 stelle)
         CheckBox zeroStars = new CheckBox("❌ Non valutato");
-        zeroStars.setStyle("-fx-font-size: 12px;");
+        zeroStars.getStyleClass().add("zero-stars");
         zeroStars.setOnAction(e -> {
             if (zeroStars.isSelected()) {
                 selectedValutazioni.add(0);
@@ -131,7 +125,6 @@ public class AdvancedFilterComponent {
             final int rating = i;
             String stars = "⭐".repeat(i);
             CheckBox checkBox = new CheckBox(stars + " " + i + " stell" + (i > 1 ? "e" : "a"));
-            checkBox.setStyle("-fx-font-size: 12px;");
 
             checkBox.setOnAction(e -> {
                 if (checkBox.isSelected()) {
@@ -153,7 +146,6 @@ public class AdvancedFilterComponent {
 
         for (Genere genere : Genere.values()) {
             CheckBox checkBox = new CheckBox(StringUtils.formatEnumName(genere.name()));
-            checkBox.setStyle("-fx-font-size: 12px;");
 
             checkBox.setOnAction(e -> {
                 if (checkBox.isSelected()) {
@@ -177,12 +169,6 @@ public class AdvancedFilterComponent {
         menuButton.getItems().clear();
         menuButton.getItems().add(customMenuItem);
         menuButton.getStyleClass().add("filter");
-
-        menuButton.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene != null) {
-                newScene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
-            }
-        });
 
 
     }
