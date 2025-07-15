@@ -1,8 +1,8 @@
 package com.bruno.bookmanager.dao;
 
 import com.bruno.bookmanager.exception.DAOException;
+import com.bruno.bookmanager.filters.SearchCriteria;
 import com.bruno.bookmanager.model.Libro;
-import com.bruno.bookmanager.service.SearchCriteria;
 
 import java.util.List;
 

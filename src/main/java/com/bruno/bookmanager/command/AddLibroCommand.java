@@ -18,7 +18,6 @@ public class AddLibroCommand implements Command {
         this.service = service;
     }
 
-
     @Override
     public void execute() throws BookManagerException {
         service.aggiungiLibro(libro);
@@ -33,6 +32,6 @@ public class AddLibroCommand implements Command {
 
     @Override
     public String getDescription() {
-        return "Aggiunta libro: "+libro.getTitolo()+" (ISBN: "+libro.getIsbn()+")";
+        return "Aggiunta libro: " + libro.getTitolo() + " (ISBN: " + libro.getIsbn() + ")";
     }
 }

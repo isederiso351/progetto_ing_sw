@@ -16,47 +16,47 @@ import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import javax.security.auth.callback.Callback;
-
 import java.util.Optional;
-import java.util.function.Consumer;
-
-import static com.bruno.bookmanager.utils.StringUtils.formatEnumName;
 
 
 public class UnifiedBookPanelController {
 
+    private final LibroService libroService = LibroService.getInstance();
+    private final CommandHistory commandHistory = CommandHistory.getInstance();
     // Elementi della vista dettagli
-    @FXML private VBox detailsView;
-    @FXML private Label titoloLabel;
-    @FXML private Label autoreText, isbnText, genereText, valutazioneText, statoText;
-
+    @FXML
+    private VBox detailsView;
+    @FXML
+    private Label titoloLabel;
+    @FXML
+    private Label autoreText, isbnText, genereText, valutazioneText, statoText;
     // Elementi della vista form
-    @FXML private VBox formView;
-    @FXML private Label formTitleLabel;
-    @FXML private TextField titoloField, autoreField, isbnField;
-    @FXML private ComboBox<Genere> genereComboBox;
-    @FXML private Slider valutazioneSlider;
-    @FXML private Label valutazioneLabel;
-    @FXML private ComboBox<StatoLettura> statoComboBox;
-
-    @FXML private Button editButton, deleteButton;
-    @FXML private Button salvaButton;
-
+    @FXML
+    private VBox formView;
+    @FXML
+    private Label formTitleLabel;
+    @FXML
+    private TextField titoloField, autoreField, isbnField;
+    @FXML
+    private ComboBox<Genere> genereComboBox;
+    @FXML
+    private Slider valutazioneSlider;
+    @FXML
+    private Label valutazioneLabel;
+    @FXML
+    private ComboBox<StatoLettura> statoComboBox;
+    @FXML
+    private Button editButton, deleteButton;
+    @FXML
+    private Button salvaButton;
     // Stato e servizi
     private Libro currentLibro;
     private boolean isEditMode = false;
     private boolean isAddMode = false;
-    private final LibroService libroService = LibroService.getInstance();
-    private final CommandHistory commandHistory = CommandHistory.getInstance();
-
     // Callback
     private Runnable onCloseCallback;
     private Runnable onDeleteCallback;
@@ -132,7 +132,7 @@ public class UnifiedBookPanelController {
         // Aggiorna la label quando cambia il valore
         valutazioneSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             int rating = newVal.intValue();
-            if (rating ==0){
+            if (rating == 0) {
                 valutazioneLabel.setText("✘ No valutazione");
                 return;
             }
@@ -196,7 +196,7 @@ public class UnifiedBookPanelController {
         titoloLabel.setText(libro.getTitolo());
         autoreText.setText(libro.getAutore());
         isbnText.setText(libro.getIsbn());
-        genereText.setText(StringUtils.formatEnumName(libro.getGenere()!=null?libro.getGenere().name():""));
+        genereText.setText(StringUtils.formatEnumName(libro.getGenere() != null ? libro.getGenere().name() : ""));
         valutazioneText.setText("★".repeat(libro.getValutazione()));
         valutazioneText.setTextFill(Color.GOLD);
         statoText.setText(StringUtils.formatEnumName(libro.getStatoLettura().name()));
@@ -277,7 +277,7 @@ public class UnifiedBookPanelController {
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 commandHistory.executeCommand(new RemoveLibroCommand(libroService, currentLibro.getIsbn()));
-                currentLibro=null;
+                currentLibro = null;
             } catch (BookManagerException e) {
                 showErrorAlert("Errore", "Impossibile eliminare il libro: " + e.getMessage());
             }
@@ -319,7 +319,6 @@ public class UnifiedBookPanelController {
             showErrorAlert("Errore", "Si è verificato un errore imprevisto: " + e.getMessage());
         }
     }
-
 
 
     // ============= CALLBACK SETTERS =============

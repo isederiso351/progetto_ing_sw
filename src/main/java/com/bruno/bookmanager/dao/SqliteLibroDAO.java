@@ -1,13 +1,12 @@
 package com.bruno.bookmanager.dao;
 
-import com.bruno.bookmanager.filters.Filter;
 import com.bruno.bookmanager.exception.DAOException;
 import com.bruno.bookmanager.exception.LibroAlreadyExistsException;
 import com.bruno.bookmanager.exception.LibroNotFoundException;
+import com.bruno.bookmanager.filters.SearchCriteria;
 import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;
 import com.bruno.bookmanager.model.StatoLettura;
-import com.bruno.bookmanager.service.SearchCriteria;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -197,9 +196,8 @@ public class SqliteLibroDAO implements LibroDAO, OptimizedSearch {
     private boolean isPrimaryKeyViolation(SQLException e) {
         return e.getErrorCode() == 19 // SQLITE_CONSTRAINT
                 || e.getErrorCode() == 1555 // SQLITE_CONSTRAINT_PRIMARYKEY
-                || (e.getMessage() != null &&
-                (e.getMessage().contains("PRIMARY KEY constraint failed") ||
-                        e.getMessage().contains("UNIQUE constraint failed")));
+                || (e.getMessage() != null && (e.getMessage().contains(
+                "PRIMARY KEY constraint failed") || e.getMessage().contains("UNIQUE constraint failed")));
     }
 
     @Override
@@ -272,8 +270,7 @@ public class SqliteLibroDAO implements LibroDAO, OptimizedSearch {
                     sql.append(" WHERE ").append(whereClause);
                 }
             } catch (Exception e) {
-                logger.error("Errore nell'applicare il filtro: {}",
-                        e.getMessage());
+                logger.error("Errore nell'applicare il filtro: {}", e.getMessage());
                 throw new DAOException("Impossibile convertire il filtro", e);
             }
         }

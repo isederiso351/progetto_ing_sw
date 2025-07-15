@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
  * dal resto dell'applicazione.
  */
 public class DAOFactory {
-
     private static final Logger logger = LoggerFactory.getLogger(DAOFactory.class);
 
     /**

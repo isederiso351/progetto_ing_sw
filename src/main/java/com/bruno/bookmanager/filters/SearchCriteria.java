@@ -1,8 +1,5 @@
-package com.bruno.bookmanager.service;
+package com.bruno.bookmanager.filters;
 
-import com.bruno.bookmanager.filters.AutoreFilter;
-import com.bruno.bookmanager.filters.Filter;
-import com.bruno.bookmanager.filters.TitoloFilter;
 import com.bruno.bookmanager.model.Libro;
 
 public class SearchCriteria {
@@ -12,36 +9,10 @@ public class SearchCriteria {
     private final SortField sortField;
     private final boolean sortAsc;
 
-    public enum SortField {
-        TITOLO, AUTORE, VALUTAZIONE, GENERE, STATO, ISBN
-    }
-
-    private SearchCriteria(Builder builder){
+    private SearchCriteria(Builder builder) {
         this.filter = builder.filter;
         this.sortField = builder.sortField;
         this.sortAsc = builder.sortAsc;
-    }
-
-    public Filter<Libro> getFilter() {
-        return filter;
-    }
-
-    public SortField getSortField() {
-        return sortField;
-    }
-
-    public boolean isSortAsc() {
-        return sortAsc;
-    }
-
-    //Helper
-
-    public boolean hasFilter() {
-        return filter != null;
-    }
-
-    public boolean hasSorting() {
-        return sortField != null;
     }
 
     // Static factory methods per casi comuni
@@ -59,6 +30,32 @@ public class SearchCriteria {
 
     public static SearchCriteria byFilter(Filter<Libro> filter) {
         return new Builder().filter(filter).build();
+    }
+
+    //Helper
+
+    public Filter<Libro> getFilter() {
+        return filter;
+    }
+
+    public SortField getSortField() {
+        return sortField;
+    }
+
+    public boolean isSortAsc() {
+        return sortAsc;
+    }
+
+    public boolean hasFilter() {
+        return filter != null;
+    }
+
+    public boolean hasSorting() {
+        return sortField != null;
+    }
+
+    public enum SortField {
+        TITOLO, AUTORE, VALUTAZIONE, GENERE, STATO, ISBN
     }
 
     public static class Builder {
@@ -86,11 +83,11 @@ public class SearchCriteria {
         }
 
         public Builder sortByAuthor(boolean ascending) {
-            return sortBy(SortField.AUTORE, ascending );
+            return sortBy(SortField.AUTORE, ascending);
         }
 
         public Builder sortByRating(boolean ascending) {
-            return sortBy(SortField.VALUTAZIONE, ascending );
+            return sortBy(SortField.VALUTAZIONE, ascending);
         }
 
         public SearchCriteria build() {

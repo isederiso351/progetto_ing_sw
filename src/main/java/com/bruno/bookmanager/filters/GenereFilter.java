@@ -3,7 +3,7 @@ package com.bruno.bookmanager.filters;
 import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;
 
-public class GenereFilter implements Filter<Libro>{
+public class GenereFilter implements Filter<Libro> {
     private final Genere genere;
 
     public GenereFilter(Genere genere) {

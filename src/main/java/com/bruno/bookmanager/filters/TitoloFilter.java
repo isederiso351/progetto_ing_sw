@@ -1,9 +1,8 @@
 package com.bruno.bookmanager.filters;
 
-import com.bruno.bookmanager.model.Genere;
 import com.bruno.bookmanager.model.Libro;
 
-public class TitoloFilter implements Filter<Libro>{
+public class TitoloFilter implements Filter<Libro> {
     private final String titolo;
 
     public TitoloFilter(String titolo) {

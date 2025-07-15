@@ -6,7 +6,7 @@ import com.bruno.bookmanager.model.Libro;
 public class ISBNFilter implements Filter<Libro> {
     private final String isbn;
 
-    public ISBNFilter(String isbn){
+    public ISBNFilter(String isbn) {
         this.isbn = isbn != null ? isbn.trim() : "";
     }
 

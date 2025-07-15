@@ -1,17 +1,11 @@
 package com.bruno.bookmanager.view;
 
 import com.bruno.bookmanager.command.CommandHistory;
-import com.bruno.bookmanager.command.RemoveLibroCommand;
 import com.bruno.bookmanager.exception.BookManagerException;
-import com.bruno.bookmanager.filters.AutoreFilter;
-import com.bruno.bookmanager.filters.Filter;
-import com.bruno.bookmanager.filters.ISBNFilter;
-import com.bruno.bookmanager.filters.TitoloFilter;
-import com.bruno.bookmanager.model.Genere;
+import com.bruno.bookmanager.filters.*;
 import com.bruno.bookmanager.model.Libro;
 import com.bruno.bookmanager.model.StatoLettura;
 import com.bruno.bookmanager.service.LibroService;
-import com.bruno.bookmanager.service.SearchCriteria;
 import com.bruno.bookmanager.utils.StringUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -26,29 +20,39 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 public class LibreriaController {
-
-    // FXML elements
-    @FXML private FlowPane booksFlowPane;
-    @FXML private StackPane detailsPlaceholder;
-    @FXML private TextField searchField;
-    @FXML private ComboBox<String> searchTypeComboBox;
-    @FXML private MenuButton filtersMenuButton;
-    @FXML private ComboBox<String> sortComboBox;
-    @FXML private CheckBox sortOrderCheckBox;
-    @FXML private Button undoButton;
-    @FXML private Button redoButton;
-    @FXML private Button addBookButton;
 
     // Services and controllers
     private final LibroService libroService = LibroService.getInstance();
     private final CommandHistory commandHistory = CommandHistory.getInstance();
+    // FXML elements
+    @FXML
+    private FlowPane booksFlowPane;
+    @FXML
+    private StackPane detailsPlaceholder;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private ComboBox<String> searchTypeComboBox;
+    @FXML
+    private MenuButton filtersMenuButton;
+    @FXML
+    private ComboBox<String> sortComboBox;
+    @FXML
+    private CheckBox sortOrderCheckBox;
+    @FXML
+    private Button undoButton;
+    @FXML
+    private Button redoButton;
+    @FXML
+    private Button addBookButton;
     private UnifiedBookPanelController panelController;
     private AdvancedFilterComponent advancedFilter;
     private List<Libro> currentBooks;
@@ -195,7 +199,7 @@ public class LibreriaController {
         titleLabel.setMaxWidth(150);
 
         Label authorLabel = new Label("");
-        if(libro.getAutore() != null && !libro.getAutore().isEmpty()) {
+        if (libro.getAutore() != null && !libro.getAutore().isEmpty()) {
             authorLabel.setText("di " + libro.getAutore());
             authorLabel.setFont(Font.font("Arial", 11));
             authorLabel.setTextFill(Color.GRAY);
@@ -230,7 +234,7 @@ public class LibreriaController {
         };
     }
 
-    private boolean loadBookPanel(){
+    private boolean loadBookPanel() {
         if (detailsPlaceholder.getChildren().isEmpty()) {
             try {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("UnifiedBookPanelView.fxml"));
@@ -241,7 +245,7 @@ public class LibreriaController {
                 panelController.setOnSaveCallback(this::handleSaveFromPanel);
                 detailsPlaceholder.getChildren().add(bookPanel);
             } catch (IOException e) {
-                showErrorAlert("Errore", "Impossibile caricare il pannello del libro "+e);
+                showErrorAlert("Errore", "Impossibile caricare il pannello del libro " + e);
                 return false;
             }
         }
@@ -250,7 +254,7 @@ public class LibreriaController {
 
 
     private void showBookDetails(Libro libro) {
-        if(! loadBookPanel())return;
+        if (!loadBookPanel()) return;
 
         detailsPlaceholder.setVisible(true);
         detailsPlaceholder.setManaged(true);
@@ -322,13 +326,13 @@ public class LibreriaController {
         updateUndoRedoButtons();
     }
 
-    private void handleSaveFromPanel(){
+    private void handleSaveFromPanel() {
         applyFiltersAndSearch();
         updateUndoRedoButtons();
     }
 
     public void handleAddBook(ActionEvent actionEvent) {
-        if(!loadBookPanel())return;
+        if (!loadBookPanel()) return;
         detailsPlaceholder.setVisible(true);
         detailsPlaceholder.setManaged(true);
 

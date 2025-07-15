@@ -11,22 +11,21 @@ import java.util.Stack;
  */
 public final class CommandHistory {
 
-    private static volatile CommandHistory singleton;
-
     private static final Logger logger = LoggerFactory.getLogger(CommandHistory.class);
-
+    private static volatile CommandHistory instance;
     private final Stack<Command> undoStack = new Stack<>();
     private final Stack<Command> redoStack = new Stack<>();
     private final int maxHistorySize = 50;
 
 
-    private CommandHistory() { }
+    private CommandHistory() {
+    }
 
     public synchronized static CommandHistory getInstance() {
-        if (singleton == null) {
-            singleton = new CommandHistory();
+        if (instance == null) {
+            instance = new CommandHistory();
         }
-        return singleton;
+        return instance;
     }
 
     /**
@@ -42,9 +41,8 @@ public final class CommandHistory {
         redoStack.clear(); // Cancella la cronologia redo dopo una nuova operazione
 
         while (undoStack.size() > maxHistorySize) {
-            undoStack.remove(0);
+            undoStack.removeFirst();
         }
-
         logger.debug("Comando eseguito e aggiunto alla cronologia: {}", command.getDescription());
     }
 

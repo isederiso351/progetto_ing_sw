@@ -2,30 +2,65 @@ package com.bruno.bookmanager.view;
 
 import com.bruno.bookmanager.dao.DAOType;
 import com.bruno.bookmanager.service.LibroService;
-import com.bruno.bookmanager.utils.StringUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ChoiceDialog;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 public class WelcomeController {
 
     private static final Logger logger = LoggerFactory.getLogger(WelcomeController.class);
+
+    /**
+     * Metodo pubblico per permettere alla LibreriaView di tornare alla WelcomeView
+     */
+    public static void returnToWelcomeFromLibrary(Stage stage) {
+        try {
+            // Ricarica la WelcomeView
+            FXMLLoader loader = new FXMLLoader(WelcomeController.class.getResource("WelcomeView.fxml"));
+            Parent welcomeRoot = loader.load();
+
+            Scene welcomeScene = new Scene(welcomeRoot);
+            stage.setScene(welcomeScene);
+            stage.setTitle("Book Manager");
+
+            logger.info("Ritorno alla WelcomeView completato");
+        } catch (IOException e) {
+            logger.error("Errore durante il ritorno alla WelcomeView", e);
+            stage.close();
+        }
+    }
+
+    /**
+     * Centra la finestra al centro dello schermo principale.
+     *
+     * @param stage la finestra da centrare
+     */
+    private static void centerStageOnScreen(Stage stage) {
+        // Ottieni le dimensioni dello schermo principale
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
+
+        // Calcola la posizione per centrare la finestra
+        double centerX = (screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX();
+        double centerY = (screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY();
+
+        // Imposta la posizione
+        stage.setX(centerX);
+        stage.setY(centerY);
+
+        logger.debug("Finestra centrata alle coordinate: X={}, Y={}", centerX, centerY);
+    }
 
     @FXML
     private void handleCreateNewLibrary(ActionEvent event) {
@@ -49,7 +84,7 @@ public class WelcomeController {
                 } else {
                     daoType = DAOType.CACHED_JSON; // Usa versione cached per prestazioni migliori
                 }
-                if(selectedFile.exists())selectedFile.delete();
+                if (selectedFile.exists()) selectedFile.delete();
 
                 // Configura il service
                 LibroService.getInstance().setDAO(daoType, selectedFile.getAbsolutePath());
@@ -68,11 +103,9 @@ public class WelcomeController {
             // Mostra dialog per scegliere il file da caricare
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Carica Libreria Esistente");
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("File JSON", "*.json"),
+            fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("File JSON", "*.json"),
                     new FileChooser.ExtensionFilter("Database SQLite", "*.db"),
-                    new FileChooser.ExtensionFilter("Tutti i file", "*.*")
-            );
+                    new FileChooser.ExtensionFilter("Tutti i file", "*.*"));
             fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
 
             Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
@@ -90,7 +123,6 @@ public class WelcomeController {
                 LibroService service = LibroService.getInstance();
 
                 service.setDAO(daoType, selectedFile.getAbsolutePath());
-                service.caricaCollezione();
 
                 openLibraryView(stage, selectedFile.getName());
             }
@@ -110,7 +142,7 @@ public class WelcomeController {
         Scene welcomeScene = stage.getScene();
 
         stage.setScene(new Scene(root, 1200, 800));
-        stage.setTitle("Book Manager - "+name);
+        stage.setTitle("Book Manager - " + name);
         stage.setMinWidth(800);
         stage.setMinHeight(600);
 
@@ -139,26 +171,6 @@ public class WelcomeController {
     }
 
     /**
-     * Metodo pubblico per permettere alla LibreriaView di tornare alla WelcomeView
-     */
-    public static void returnToWelcomeFromLibrary(Stage stage) {
-        try {
-            // Ricarica la WelcomeView
-            FXMLLoader loader = new FXMLLoader(WelcomeController.class.getResource("WelcomeView.fxml"));
-            Parent welcomeRoot = loader.load();
-
-            Scene welcomeScene = new Scene(welcomeRoot);
-            stage.setScene(welcomeScene);
-            stage.setTitle("Book Manager");
-
-            logger.info("Ritorno alla WelcomeView completato");
-        } catch (IOException e) {
-            logger.error("Errore durante il ritorno alla WelcomeView", e);
-            stage.close();
-        }
-    }
-
-    /**
      * Esegue il ritorno alla WelcomeView.
      */
     private void returnToWelcomeView(Stage stage, Scene welcomeScene) {
@@ -177,26 +189,6 @@ public class WelcomeController {
             logger.error("Errore durante il ritorno alla WelcomeView", e);
             stage.close();
         }
-    }
-
-    /**
-     * Centra la finestra al centro dello schermo principale.
-     *
-     * @param stage la finestra da centrare
-     */
-    private static void centerStageOnScreen(Stage stage) {
-        // Ottieni le dimensioni dello schermo principale
-        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
-
-        // Calcola la posizione per centrare la finestra
-        double centerX = (screenBounds.getWidth() - stage.getWidth()) / 2 + screenBounds.getMinX();
-        double centerY = (screenBounds.getHeight() - stage.getHeight()) / 2 + screenBounds.getMinY();
-
-        // Imposta la posizione
-        stage.setX(centerX);
-        stage.setY(centerY);
-
-        logger.debug("Finestra centrata alle coordinate: X={}, Y={}", centerX, centerY);
     }
 
     /**

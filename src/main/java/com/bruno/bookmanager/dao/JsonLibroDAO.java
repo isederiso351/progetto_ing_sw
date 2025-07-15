@@ -1,6 +1,5 @@
 package com.bruno.bookmanager.dao;
 
-import com.bruno.bookmanager.filters.Filter;
 import com.bruno.bookmanager.exception.DAOException;
 import com.bruno.bookmanager.exception.LibroAlreadyExistsException;
 import com.bruno.bookmanager.exception.LibroNotFoundException;

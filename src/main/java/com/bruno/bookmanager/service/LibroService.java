@@ -7,6 +7,7 @@ import com.bruno.bookmanager.dao.OptimizedSearch;
 import com.bruno.bookmanager.exception.*;
 import com.bruno.bookmanager.filters.Filter;
 import com.bruno.bookmanager.filters.ISBNFilter;
+import com.bruno.bookmanager.filters.SearchCriteria;
 import com.bruno.bookmanager.model.Libro;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,7 +197,7 @@ public final class LibroService {
                 return result;
             } else {
                 // Fallback: ricerca in memoria
-                List<Libro> result = searchInMemory(criteria);
+                List<Libro> result = applyCriteria(criteria);
                 logger.debug("Ricerca in memoria completata: {} libri trovati", result.size());
                 return result;
             }
@@ -207,7 +208,7 @@ public final class LibroService {
 
     }
 
-    private List<Libro> searchInMemory(SearchCriteria criteria) throws DAOException {
+    private List<Libro> applyCriteria(SearchCriteria criteria) throws DAOException {
         List<Libro> allBooks = libroDAO.getAll();
         Stream<Libro> stream = allBooks.stream();
 
@@ -240,7 +241,6 @@ public final class LibroService {
     }
 
     //Metodi di convenienza
-
     /**
      * Cerca libri per titolo (ricerca parziale case-insensitive).
      *
@@ -283,7 +283,6 @@ public final class LibroService {
         return search(new SearchCriteria.Builder().filter(new ISBNFilter(isbn)).build());
     }
 
-
     /**
      * Applica un filtro personalizzato.
      *
@@ -294,46 +293,5 @@ public final class LibroService {
     public List<Libro> filtraLibri(Filter<Libro> filter) throws BookManagerException {
         return search(SearchCriteria.byFilter(filter));
     }
-    // ============= PERSISTENZA =============
 
-    /**
-     * Carica la collezione da memoria secondaria.
-     *
-     * @throws BookManagerException per errori di caricamento
-     */
-    public void caricaCollezione() throws BookManagerException {
-        checkDAOInitialized();
-
-        try {
-            List<Libro> libri = libroDAO.getAll();
-            logger.info("Collezione caricata con successo: {} libri", libri.size());
-        } catch (DAOException e) {
-            logger.error("Errore durante il caricamento della collezione", e);
-            throw new BookManagerException("Impossibile caricare la collezione", e);
-        }
-    }
-
-    // ============= STATISTICHE E UTILITY =============
-
-    /**
-     * Restituisce il numero totale di libri nella collezione.
-     *
-     * @return numero di libri
-     * @throws BookManagerException per errori di accesso ai dati
-     */
-    public int contaLibri() throws BookManagerException {
-        return getAllLibri().size();
-    }
-
-    /**
-     * Restituisce la valutazione media di tutti i libri.
-     *
-     * @return valutazione media, 0.0 se non ci sono libri
-     * @throws BookManagerException per errori di accesso ai dati
-     */
-    public double getValutazioneMedia() throws BookManagerException {
-        List<Libro> tuttiILibri = getAllLibri();
-
-        return tuttiILibri.stream().mapToInt(Libro::getValutazione).average().orElse(0.0);
-    }
 }

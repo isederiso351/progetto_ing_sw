@@ -1,6 +1,5 @@
 package com.bruno.bookmanager.dao;
 
-import com.bruno.bookmanager.filters.Filter;
 import com.bruno.bookmanager.exception.DAOException;
 import com.bruno.bookmanager.exception.LibroAlreadyExistsException;
 import com.bruno.bookmanager.exception.LibroNotFoundException;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Implementazione di {@link LibroDAO} che aggiunge una cache in memoria sopra un altro DAO.

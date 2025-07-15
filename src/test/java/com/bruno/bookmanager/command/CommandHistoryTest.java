@@ -5,6 +5,7 @@ import com.bruno.bookmanager.exception.BookManagerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -13,18 +14,25 @@ import static org.mockito.Mockito.when;
 class CommandHistoryTest {
 
     private CommandHistory history;
+
+    @Mock
     private Command mockCommand1;
+
+    @Mock
     private Command mockCommand2;
+
+    @Mock
     private Command mockCommand3;
 
     @BeforeEach
     void setUp() {
-        history = CommandHistory.getInstance(); // Limite di 3 comandi per test
+        MockitoAnnotations.openMocks(this);
 
-        mockCommand1 = mock(Command.class);
-        mockCommand2 = mock(Command.class);
-        mockCommand3 = mock(Command.class);
+        // Ottieni l'istanza singleton e puliscila prima di ogni test
+        history = CommandHistory.getInstance();
+        history.clear();
 
+        // Setup mock behaviors
         when(mockCommand1.canUndo()).thenReturn(true);
         when(mockCommand2.canUndo()).thenReturn(true);
         when(mockCommand3.canUndo()).thenReturn(true);
@@ -93,5 +101,88 @@ class CommandHistoryTest {
         history.executeCommand(mockCommand3); // Dovrebbe cancellare redo stack
 
         assertFalse(history.canRedo());
+        assertEquals("Command 3", history.getLastCommandDescription());
+    }
+
+    @Test
+    void undoCommandThatCannotBeUndoneTest() throws Exception {
+        when(mockCommand1.canUndo()).thenReturn(false);
+
+        history.executeCommand(mockCommand1);
+
+        assertThrows(BookManagerException.class, () -> history.undo());
+    }
+
+    @Test
+    void multipleUndoRedoTest() throws Exception {
+        history.executeCommand(mockCommand1);
+        history.executeCommand(mockCommand2);
+        history.executeCommand(mockCommand3);
+
+        // Undo tutti
+        history.undo(); // undo cmd3
+        history.undo(); // undo cmd2
+        history.undo(); // undo cmd1
+
+        assertFalse(history.canUndo());
+        assertTrue(history.canRedo());
+
+        // Redo tutti
+        history.redo(); // redo cmd1
+        history.redo(); // redo cmd2
+        history.redo(); // redo cmd3
+
+        assertTrue(history.canUndo());
+        assertFalse(history.canRedo());
+        assertEquals("Command 3", history.getLastCommandDescription());
+    }
+
+    @Test
+    void commandExecutionFailureTest() throws Exception {
+        doThrow(new BookManagerException("Execution failed")).when(mockCommand1).execute();
+
+        assertThrows(BookManagerException.class, () -> history.executeCommand(mockCommand1));
+
+        // Verifica che il comando non sia stato aggiunto alla cronologia
+        assertFalse(history.canUndo());
+        assertNull(history.getLastCommandDescription());
+    }
+
+    @Test
+    void maxHistorySizeTest() throws Exception {
+        // Aggiungi più di 50 comandi (il limite massimo)
+        for (int i = 0; i < 60; i++) {
+            Command cmd = mock(Command.class);
+            when(cmd.canUndo()).thenReturn(true);
+            when(cmd.getDescription()).thenReturn("Command " + i);
+            history.executeCommand(cmd);
+        }
+
+        // Dovrebbe esserci un limite nella cronologia
+        int undoCount = 0;
+        while (history.canUndo()) {
+            history.undo();
+            undoCount++;
+        }
+
+        // Non dovrebbe superare il limite massimo
+        assertTrue(undoCount <= 50);
+    }
+
+    @Test
+    void clearHistoryTest() throws Exception {
+        history.executeCommand(mockCommand1);
+        history.executeCommand(mockCommand2);
+        history.undo();
+
+        assertTrue(history.canUndo());
+        assertTrue(history.canRedo());
+
+        history.clear();
+
+        assertFalse(history.canUndo());
+        assertFalse(history.canRedo());
+        assertNull(history.getLastCommandDescription());
+        assertNull(history.getNextRedoCommandDescription());
     }
 }

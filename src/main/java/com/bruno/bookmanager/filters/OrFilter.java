@@ -1,6 +1,6 @@
 package com.bruno.bookmanager.filters;
 
-public class OrFilter<T> implements Filter<T>{
+public class OrFilter<T> implements Filter<T> {
 
     private final Filter<T> left, right;
 

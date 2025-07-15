@@ -32,7 +32,7 @@ public interface Command {
     }
 
     /**
-     * Restituisce una descrizione dell'operazione per logging/UI.
+     * Restituisce una descrizione dell'operazione per logging e UI.
      *
      * @return descrizione dell'operazione
      */

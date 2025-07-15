@@ -16,7 +16,7 @@ public class Validator {
         if (libro.getTitolo().length() > 255) {
             throw new ValidationException("Il titolo non può superare i 255 caratteri");
         }
-        if (libro.getAutore()!=null&& libro.getAutore().length() > 255) {
+        if (libro.getAutore() != null && libro.getAutore().length() > 255) {
             throw new ValidationException("L'autore non può superare i 255 caratteri");
         }
         validateIsbn(libro.getIsbn());
@@ -32,8 +32,7 @@ public class Validator {
         if (isbn == null || isbn.isBlank()) {
             throw new ValidationException("ISBN non può essere vuoto");
         }
-        if(!isbn.matches("^(\\d{9}[\\dX]|\\d{13})$"))
-            throw new ValidationException("ISBN non valido");
+        if (!isbn.matches("^(\\d{9}[\\dX]|\\d{13})$")) throw new ValidationException("ISBN non valido");
     }
 
 

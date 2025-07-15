@@ -3,7 +3,7 @@ package com.bruno.bookmanager.filters;
 import com.bruno.bookmanager.model.Libro;
 import com.bruno.bookmanager.model.StatoLettura;
 
-public class StatoLetturaFilter implements Filter<Libro>{
+public class StatoLetturaFilter implements Filter<Libro> {
 
     private final StatoLettura statoLettura;
 

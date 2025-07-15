@@ -2,7 +2,7 @@ package com.bruno.bookmanager.filters;
 
 import com.bruno.bookmanager.model.Libro;
 
-public class AutoreFilter implements Filter<Libro>{
+public class AutoreFilter implements Filter<Libro> {
     private final String autore;
 
     public AutoreFilter(String autore) {
@@ -19,3 +19,4 @@ public class AutoreFilter implements Filter<Libro>{
         return "autore LIKE '%" + autore + "%'";
     }
 }
+
