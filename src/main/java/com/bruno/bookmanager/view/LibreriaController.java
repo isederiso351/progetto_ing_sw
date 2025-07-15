@@ -255,7 +255,6 @@ public class LibreriaController {
 
     private void showBookDetails(Libro libro) {
         if (!loadBookPanel()) return;
-
         detailsPlaceholder.setVisible(true);
         detailsPlaceholder.setManaged(true);
 
@@ -301,9 +300,11 @@ public class LibreriaController {
     @FXML
     public void handleUndo(ActionEvent actionEvent) {
         try {
+            hideBoxDetails();
             commandHistory.undo();
             applyFiltersAndSearch();
             updateUndoRedoButtons();
+
         } catch (BookManagerException e) {
             showErrorAlert("Errore", "Impossibile annullare: " + e.getMessage());
         }
@@ -312,6 +313,7 @@ public class LibreriaController {
     @FXML
     public void handleRedo(ActionEvent actionEvent) {
         try {
+            hideBoxDetails();
             commandHistory.redo();
             applyFiltersAndSearch();
             updateUndoRedoButtons();
